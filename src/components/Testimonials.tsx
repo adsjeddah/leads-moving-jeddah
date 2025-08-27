@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { Star, Users, TrendingUp, Award, Heart } from 'lucide-react'
+import { Star, Users, TrendingUp, Award, Heart, ChevronLeft, ChevronRight } from 'lucide-react'
 
 // بيانات العملاء للصور الدائرية
 const clientAvatars = [
@@ -21,15 +21,45 @@ const clientAvatars = [
   '/images/clients/basma.webp'
 ]
 
-// العميل المميز
-const featuredTestimonial = {
-  name: 'مروان القرني',
-  avatar: '/images/clients/mohamed_ali.jpg',
-  rating: 5,
-  duration: 'منذ 3 أسابيع',
-  cost: '1,700 ريال',
-  text: 'تعاملت مع شركة من الدليل ووجدت الاحترافية والأمانة. حل للتفاصيل واضحة والخدمة سريعة'
-}
+// مجموعة التقييمات المتعددة
+const testimonials = [
+  {
+    id: 1,
+    name: 'مروان القرني',
+    avatar: '/images/clients/mohamed_ali.jpg',
+    rating: 5,
+    duration: 'منذ 3 أسابيع',
+    cost: '1,700 ريال',
+    text: 'تعاملت مع شركة من الدليل ووجدت الاحترافية والأمانة. حل للتفاصيل واضحة والخدمة سريعة'
+  },
+  {
+    id: 2,
+    name: 'فاطمة الأحمد',
+    avatar: '/images/clients/asmaa.png',
+    rating: 5,
+    duration: 'منذ أسبوعين',
+    cost: '2,300 ريال',
+    text: 'خدمة ممتازة جداً! الفريق محترف ودقيق في المواعيد. تم نقل جميع الأثاث بدون أي خدش أو ضرر'
+  },
+  {
+    id: 3,
+    name: 'عبدالله العتيبي',
+    avatar: '/images/clients/Abdullah_AlDosari.png',
+    rating: 5,
+    duration: 'منذ شهر',
+    cost: '1,450 ريال',
+    text: 'الشباب شاطرين ومحترمين، فكوا وركبوا الأثاث بسرعة وكفاءة. ما قصروا والله، أنصح الجميع بخدماتهم'
+  },
+  {
+    id: 4,
+    name: 'نورا الحربي',
+    avatar: '/images/clients/Noura_AlHarbi.png',
+    rating: 5,
+    duration: 'منذ أسبوع',
+    cost: '3,200 ريال',
+    text: 'نقلوا عفشي من جدة للرياض بكل أمانة واحترافية. وصل كل شيء سليم 100% والتواصل كان ممتاز طول الطريق'
+  }
+]
 
 // الإحصائيات الرئيسية
 const mainStats = [
@@ -37,33 +67,57 @@ const mainStats = [
     icon: Users, 
     value: '+15,000', 
     label: 'عملية نقل',
-    color: 'from-purple-500 to-purple-600',
-    bgColor: 'bg-purple-500/10'
+    iconColor: 'text-purple-400',
+    bgColor: 'bg-purple-500/20'
   },
   { 
     icon: TrendingUp, 
     value: '98%', 
     label: 'نسبة الرضا',
-    color: 'from-green-500 to-green-600', 
-    bgColor: 'bg-green-500/10'
+    iconColor: 'text-green-400', 
+    bgColor: 'bg-green-500/20'
   },
   { 
     icon: Star, 
     value: '4.9', 
     label: 'متوسط التقييم',
-    color: 'from-orange-500 to-orange-600',
-    bgColor: 'bg-orange-500/10'
+    iconColor: 'text-orange-400',
+    bgColor: 'bg-orange-500/20'
   },
   { 
     icon: Heart, 
     value: '+2,847', 
     label: 'عميل سعيد',
-    color: 'from-blue-500 to-blue-600',
-    bgColor: 'bg-blue-500/10'
+    iconColor: 'text-blue-400',
+    bgColor: 'bg-blue-500/20'
   }
 ]
 
 export function Testimonials() {
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [autoPlay, setAutoPlay] = useState(true)
+
+  // التقليب التلقائي بين التقييمات
+  useEffect(() => {
+    if (!autoPlay) return
+    
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+    }, 5000)
+    
+    return () => clearInterval(interval)
+  }, [autoPlay])
+
+  const handleNext = () => {
+    setAutoPlay(false)
+    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+  }
+
+  const handlePrev = () => {
+    setAutoPlay(false)
+    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+  }
+
   return (
     <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
       {/* Background Effects */}
@@ -105,71 +159,110 @@ export function Testimonials() {
           </p>
         </motion.div>
 
-        {/* Featured Testimonial */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto mb-16"
-        >
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
-            <p className="text-2xl text-white leading-relaxed mb-8 text-center">
-              &ldquo;{featuredTestimonial.text}&rdquo;
-            </p>
-            
-            <div className="flex items-center justify-center gap-6">
-              <div className="text-center">
-                <p className="text-gray-400 text-sm mb-1">الحد الأدنى لطلبكم</p>
-                <p className="text-green-400 font-bold text-lg">{featuredTestimonial.cost}</p>
-              </div>
+        {/* Featured Testimonial with Carousel */}
+        <div className="max-w-4xl mx-auto mb-16 relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentTestimonial}
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -300 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20"
+            >
+              <p className="text-2xl text-white leading-relaxed mb-8 text-center">
+                &ldquo;{testimonials[currentTestimonial].text}&rdquo;
+              </p>
               
-              <div className="relative">
-                <Image
-                  src={featuredTestimonial.avatar}
-                  alt={featuredTestimonial.name}
-                  width={80}
-                  height={80}
-                  className="rounded-full border-4 border-white/20"
-                />
-              </div>
-              
-              <div className="text-center">
-                <p className="text-white font-bold text-xl">{featuredTestimonial.name}</p>
-                <div className="flex justify-center gap-1 my-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
+              <div className="flex items-center justify-center gap-6">
+                <div className="text-center">
+                  <p className="text-gray-400 text-sm mb-1">تكلفة الخدمة</p>
+                  <p className="text-green-400 font-bold text-lg">{testimonials[currentTestimonial].cost}</p>
                 </div>
-                <p className="text-gray-400 text-sm">{featuredTestimonial.duration}</p>
+                
+                <div className="relative">
+                  <Image
+                    src={testimonials[currentTestimonial].avatar}
+                    alt={testimonials[currentTestimonial].name}
+                    width={80}
+                    height={80}
+                    className="rounded-full border-4 border-white/20"
+                  />
+                </div>
+                
+                <div className="text-center">
+                  <p className="text-white font-bold text-xl">{testimonials[currentTestimonial].name}</p>
+                  <div className="flex justify-center gap-1 my-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-gray-400 text-sm">{testimonials[currentTestimonial].duration}</p>
+                </div>
               </div>
-            </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation Arrows */}
+          <button
+            onClick={handlePrev}
+            className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-16 w-12 h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 border border-white/30"
+          >
+            <ChevronRight className="w-6 h-6 text-white" />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-16 w-12 h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 border border-white/30"
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center gap-2 mt-6">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setAutoPlay(false)
+                  setCurrentTestimonial(index)
+                }}
+                className={`transition-all duration-300 ${
+                  index === currentTestimonial 
+                    ? 'w-8 h-2 bg-white rounded-full' 
+                    : 'w-2 h-2 bg-white/40 rounded-full hover:bg-white/60'
+                }`}
+              />
+            ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Client Avatars */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex justify-center items-center gap-4 mb-8"
+          className="flex justify-center items-center mb-8"
         >
-          <div className="flex -space-x-3">
+          <div className="flex items-center gap-1">
             {clientAvatars.slice(0, 12).map((avatar, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
                 className="relative"
+                style={{ zIndex: 12 - index }}
               >
-                <Image
-                  src={avatar}
-                  alt={`عميل ${index + 1}`}
-                  width={50}
-                  height={50}
-                  className="rounded-full border-3 border-white/30 hover:scale-110 transition-transform duration-300"
-                />
+                <div className="relative overflow-hidden rounded-full border-3 border-white/50 bg-white/10 backdrop-blur-sm hover:scale-110 transition-all duration-300 hover:border-white/70">
+                  <Image
+                    src={avatar}
+                    alt={`عميل ${index + 1}`}
+                    width={48}
+                    height={48}
+                    className="rounded-full object-cover"
+                  />
+                </div>
               </motion.div>
             ))}
           </div>
@@ -210,8 +303,8 @@ export function Testimonials() {
               whileHover={{ scale: 1.05 }}
               className="text-center p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-300"
             >
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
-                <stat.icon className={`w-8 h-8 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} />
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl ${stat.bgColor} flex items-center justify-center border border-white/20`}>
+                <stat.icon className={`w-8 h-8 ${stat.iconColor}`} />
               </div>
               <div className="text-3xl font-bold text-white mb-2">
                 {stat.value}
