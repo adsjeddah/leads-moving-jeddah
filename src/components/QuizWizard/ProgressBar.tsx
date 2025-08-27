@@ -93,7 +93,7 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
               key={motivation.message}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="font-bold text-gray-900 text-sm sm:text-base"
+              className="font-bold text-gray-900 text-sm sm:text-base no-underline"
             >
               {motivation.message}
             </motion.h4>
@@ -102,7 +102,7 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-xs sm:text-sm text-gray-600"
+              className="text-xs sm:text-sm text-gray-600 no-underline"
             >
               {motivation.subMessage}
             </motion.p>
@@ -133,7 +133,7 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
               }}
             />
           </motion.div>
-          <p className="text-xs text-gray-500 mt-1">مكتمل</p>
+          <p className="text-xs text-gray-500 mt-1 no-underline">مكتمل</p>
         </div>
       </motion.div>
 
@@ -181,11 +181,11 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
         </div>
         
         {/* تسميات الخطوات */}
-        <div className="flex justify-between items-center mt-3 text-xs sm:text-sm text-gray-600">
-          <span className="font-medium">
+        <div className="flex justify-between items-center mt-3 text-xs sm:text-sm text-gray-600 no-underline">
+          <span className="font-medium no-underline">
             الخطوة {currentStep + 1} من {totalSteps}
           </span>
-          <span className="font-medium">
+          <span className="font-medium no-underline">
             {totalSteps - currentStep - 1} خطوات متبقية
           </span>
         </div>
@@ -275,7 +275,7 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-full border border-purple-100">
           <Sparkles className="w-4 h-4 text-purple-500" />
-          <span className="text-sm font-medium text-purple-700">
+          <span className="text-sm font-medium text-purple-700 no-underline">
             {progress < 100 ? "تسير بخطى رائعة!" : "تهانينا على الإنجاز! 🎉"}
           </span>
         </div>
