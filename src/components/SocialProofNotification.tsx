@@ -139,54 +139,54 @@ export function SocialProofNotification() {
             }}
             className="pointer-events-auto"
           >
-            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 max-w-sm w-80 sm:w-96 backdrop-blur-sm">
+            <div className="relative bg-white rounded-xl shadow-xl border border-gray-200 p-3 max-w-xs w-60 sm:w-72 backdrop-blur-sm">
               {/* زر الإغلاق */}
               <button
                 onClick={handleClose}
-                className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                className="absolute top-2 right-2 p-0.5 rounded-full hover:bg-gray-100 transition-colors"
                 aria-label="إغلاق الإشعار"
               >
-                <X className="w-4 h-4 text-gray-500" />
+                <X className="w-3 h-3 text-gray-500" />
               </button>
 
               {/* محتوى الإشعار */}
-              <div className="flex items-start gap-3 pr-6">
+              <div className="flex items-start gap-2 pr-4">
                 {/* أيقونة التأكيد */}
-                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-                  <CheckCircle2 className="w-5 h-5 text-white" />
+                <div className="flex-shrink-0 w-7 h-7 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-md">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   {/* اسم العميل */}
-                  <div className="flex items-center gap-1 mb-1">
-                    <User className="w-4 h-4 text-gray-500" />
-                    <p className="font-semibold text-gray-900 text-sm truncate">
+                  <div className="flex items-center gap-1 mb-0.5">
+                    <User className="w-3 h-3 text-gray-500" />
+                    <p className="font-semibold text-gray-900 text-xs truncate">
                       {currentNotification.name}
                     </p>
                   </div>
 
                   {/* نوع الطلب */}
-                  <p className="text-gray-700 text-sm font-medium mb-2">
+                  <p className="text-gray-700 text-xs font-medium mb-1.5">
                     {currentNotification.message}
                   </p>
 
                   {/* الموقع والوقت */}
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      <span className="truncate">{currentNotification.district}</span>
+                    <div className="flex items-center gap-0.5">
+                      <MapPin className="w-2.5 h-2.5" />
+                      <span className="truncate text-xs">{currentNotification.district}</span>
                     </div>
                     
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <Clock className="w-3 h-3" />
-                      <span>{currentNotification.time}</span>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <Clock className="w-2.5 h-2.5" />
+                      <span className="text-xs">{currentNotification.time}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* شريط التقدم */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100 rounded-b-2xl overflow-hidden">
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-100 rounded-b-xl overflow-hidden">
                 <motion.div
                   className="h-full bg-gradient-to-r from-emerald-400 to-teal-500"
                   initial={{ width: "100%" }}
@@ -196,7 +196,7 @@ export function SocialProofNotification() {
               </div>
 
               {/* تأثير التوهج */}
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/5 to-teal-500/5 rounded-2xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/5 to-teal-500/5 rounded-xl pointer-events-none" />
             </div>
           </motion.div>
         )}
@@ -208,7 +208,7 @@ export function SocialProofNotification() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={handleDismiss}
-          className="pointer-events-auto text-xs text-gray-400 hover:text-gray-600 transition-colors bg-white/80 backdrop-blur-sm px-2 py-1 rounded-lg shadow-sm border border-gray-200"
+          className="pointer-events-auto text-xs text-gray-400 hover:text-gray-600 transition-colors bg-white/80 backdrop-blur-sm px-1.5 py-0.5 rounded-md shadow-sm border border-gray-200"
         >
           إيقاف الإشعارات
         </motion.button>

@@ -1,52 +1,130 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Truck, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Truck, X, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 
 export function OnlineProvidersIndicator() {
   const [onlineCount, setOnlineCount] = useState(23) // قيمة ابتدائية وسط المدى
   const [isDismissed, setIsDismissed] = useState(false)
+  const [showChangeNotification, setShowChangeNotification] = useState(false)
+  const [changeDirection, setChangeDirection] = useState<'up' | 'down' | 'same'>('same')
+  const [changeAmount, setChangeAmount] = useState(0)
 
-  // دالة لتوليد عدد عشوائي بين 17-35 مع منطق واقعي
+  // دالة لتوليد عدد عشوائي بين 17-35 مع منطق واقعي ومتقدم
   const generateRealisticCount = (currentCount: number): number => {
-    // تغييرات صغيرة أكثر واقعية (+-1 إلى +-3)
-    const maxChange = Math.random() > 0.7 ? 3 : Math.random() > 0.5 ? 2 : 1
-    const direction = Math.random() > 0.5 ? 1 : -1
-    const change = Math.floor(Math.random() * maxChange) + 1
+    // نظام ذكي لتوليد التغييرات المنطقية
+    const timeOfDay = new Date().getHours()
     
+    // أوقات الذروة (المزيد من الشركات)
+    const isPeakTime = (timeOfDay >= 9 && timeOfDay <= 11) || (timeOfDay >= 14 && timeOfDay <= 17)
+    
+    // احتمالية أكبر للزيادة في أوقات الذروة
+    const increaseChance = isPeakTime ? 0.65 : 0.45
+    
+    // تحديد نوع التغيير
+    const randomValue = Math.random()
+    let direction: number
+    let maxChange: number
+    
+    if (randomValue < increaseChance) {
+      direction = 1 // زيادة
+      maxChange = isPeakTime ? 4 : 2
+    } else if (randomValue < increaseChance + 0.35) {
+      direction = -1 // نقصان
+      maxChange = isPeakTime ? 2 : 3
+    } else {
+      direction = 0 // ثابت
+      maxChange = 0
+    }
+    
+    const change = maxChange > 0 ? Math.floor(Math.random() * maxChange) + 1 : 0
     let newCount = currentCount + (direction * change)
     
-    // ضمان البقاء في المدى 17-35
-    if (newCount < 17) newCount = 17 + Math.floor(Math.random() * 3)
-    if (newCount > 35) newCount = 35 - Math.floor(Math.random() * 3)
+    // ضمان البقاء في المدى 17-35 مع تحسينات ذكية
+    if (newCount < 17) {
+      newCount = 17 + Math.floor(Math.random() * 4)
+      direction = 1
+    }
+    if (newCount > 35) {
+      newCount = 35 - Math.floor(Math.random() * 3)
+      direction = -1
+    }
+    
+    // إذا كان العدد قريب من الحدود، قلل احتمالية الحركة في نفس الاتجاه
+    if (currentCount <= 19 && direction === -1) {
+      newCount = currentCount + Math.floor(Math.random() * 2) + 1
+      direction = 1
+    }
+    if (currentCount >= 33 && direction === 1) {
+      newCount = currentCount - Math.floor(Math.random() * 2) - 1
+      direction = -1
+    }
     
     return newCount
   }
 
-  // تحديث العدد بشكل دوري واقعي
+  // دالة عرض إشعار التغيير
+  const showChangeAlert = (oldCount: number, newCount: number) => {
+    const difference = newCount - oldCount
+    setChangeAmount(Math.abs(difference))
+    
+    if (difference > 0) {
+      setChangeDirection('up')
+    } else if (difference < 0) {
+      setChangeDirection('down')
+    } else {
+      setChangeDirection('same')
+      return // لا نعرض إشعار للتغيير الصفري
+    }
+    
+    setShowChangeNotification(true)
+    
+    // إخفاء الإشعار بعد 3 ثواني
+    setTimeout(() => {
+      setShowChangeNotification(false)
+    }, 3000)
+  }
+
+  // تحديث العدد بشكل دوري واقعي ومتقدم
   useEffect(() => {
     if (isDismissed) return
 
-    const intervals = [
-      45000, 60000, 75000, 90000, 120000 // 45ث - 2 دقيقة (متغير)
-    ]
+    // أوقات متغيرة ذكية حسب النشاط
+    const getSmartInterval = () => {
+      const timeOfDay = new Date().getHours()
+      const isPeakTime = (timeOfDay >= 9 && timeOfDay <= 11) || (timeOfDay >= 14 && timeOfDay <= 17)
+      
+      // تحديثات أسرع في أوقات الذروة
+      if (isPeakTime) {
+        return [30000, 45000, 60000] // 30ث - 1 دقيقة
+      } else {
+        return [60000, 90000, 120000, 150000] // 1-2.5 دقيقة
+      }
+    }
     
     const updateCount = () => {
       if (!isDismissed) {
-        setOnlineCount(prevCount => generateRealisticCount(prevCount))
+        const oldCount = onlineCount
+        const newCount = generateRealisticCount(oldCount)
+        
+        if (newCount !== oldCount) {
+          setOnlineCount(newCount)
+          showChangeAlert(oldCount, newCount)
+        }
       }
       
-      // جدولة التحديث التالي بوقت عشوائي
-      const randomInterval = intervals[Math.floor(Math.random() * intervals.length)]
+      // جدولة التحديث التالي بوقت ذكي
+      const smartIntervals = getSmartInterval()
+      const randomInterval = smartIntervals[Math.floor(Math.random() * smartIntervals.length)]
       setTimeout(updateCount, randomInterval)
     }
 
-    // بدء التحديثات بعد دقيقة واحدة
-    const initialTimeout = setTimeout(updateCount, 60000)
+    // بدء التحديثات بعد 30 ثانية (أسرع من قبل)
+    const initialTimeout = setTimeout(updateCount, 30000)
     
     return () => clearTimeout(initialTimeout)
-  }, [isDismissed])
+  }, [onlineCount, isDismissed])
 
   // إغلاق المؤشر نهائياً
   const handleClose = () => {
@@ -92,9 +170,14 @@ export function OnlineProvidersIndicator() {
               <div className="flex-1">
                 <motion.div
                   key={onlineCount}
-                  initial={{ scale: 1.1, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  initial={{ scale: 1.2, opacity: 0, y: -10 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 20,
+                    duration: 0.5
+                  }}
                   className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent leading-none"
                 >
                   {onlineCount}
@@ -133,6 +216,45 @@ export function OnlineProvidersIndicator() {
           />
         </div>
       </motion.div>
+
+      {/* إشعار التغيير الذكي */}
+      <AnimatePresence>
+        {showChangeNotification && (
+          <motion.div
+            initial={{ opacity: 0, x: 50, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 50, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="absolute -top-12 right-0 z-50"
+          >
+            <div className={`
+              px-3 py-1.5 rounded-lg shadow-lg text-xs font-medium flex items-center gap-2
+              ${changeDirection === 'up' 
+                ? 'bg-emerald-500 text-white' 
+                : 'bg-orange-500 text-white'
+              }
+            `}>
+              {changeDirection === 'up' ? (
+                <>
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+{changeAmount} شركة انضمت</span>
+                </>
+              ) : (
+                <>
+                  <TrendingDown className="w-3 h-3" />
+                  <span>-{changeAmount} شركة غادرت</span>
+                </>
+              )}
+              
+              {/* مثلث صغير */}
+              <div className={`
+                absolute -bottom-1 right-4 w-2 h-2 rotate-45
+                ${changeDirection === 'up' ? 'bg-emerald-500' : 'bg-orange-500'}
+              `} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
