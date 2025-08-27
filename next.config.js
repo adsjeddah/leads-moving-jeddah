@@ -27,21 +27,7 @@ const nextConfig = {
   generateEtags: true,
   trailingSlash: false,
   
-  // Fix prefetching and RSC issues
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        destination: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.prokr.net'
-          }
-        ]
-      }
-    ]
-  },
+
 
   async headers() {
     return [
