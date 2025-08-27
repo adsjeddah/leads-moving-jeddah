@@ -511,12 +511,7 @@ export function QuizWizard() {
                 <h3 className="font-bold text-gray-900 text-base sm:text-lg">{steps[currentStep].title}</h3>
                 <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{steps[currentStep].subtitle}</p>
               </div>
-              <div className="text-right">
-                <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  {Math.round(completionPercentage)}%
-                </span>
-                <p className="text-xs text-gray-600">مكتمل</p>
-              </div>
+
             </div>
             
             <ProgressBar 
@@ -525,43 +520,7 @@ export function QuizWizard() {
               completedSteps={completedSteps}
             />
 
-            {/* Step indicators - Mobile optimized */}
-            <div className="flex justify-between mt-4 sm:mt-6">
-              {steps.map((step, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToStep(index)}
-                  disabled={index > Math.max(...completedSteps, 0) + 1}
-                  className={`
-                    flex flex-col items-center gap-0.5 sm:gap-1 cursor-pointer transition-all duration-300 flex-1
-                    ${index === currentStep ? 'scale-110' : ''}
-                    ${index > Math.max(...completedSteps, 0) + 1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
-                  `}
-                >
-                  <div className={`
-                    w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-base sm:text-xl transition-all duration-300
-                    ${index === currentStep 
-                      ? 'bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 shadow-lg transform' 
-                      : index <= Math.max(...completedSteps, 0)
-                      ? 'bg-green-100'
-                      : 'bg-gray-100'
-                    }
-                  `}>
-                    {index <= Math.max(...completedSteps, 0) && index !== currentStep ? (
-                      '✓'
-                    ) : (
-                      step.icon
-                    )}
-                  </div>
-                  <span className={`
-                    text-[10px] sm:text-xs font-medium hidden sm:block
-                    ${index === currentStep ? 'text-gray-900' : 'text-gray-500'}
-                  `}>
-                    {step.title}
-                  </span>
-                </button>
-              ))}
-            </div>
+
           </div>
 
           {/* Smart Suggestions */}

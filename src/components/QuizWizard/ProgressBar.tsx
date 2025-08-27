@@ -120,9 +120,9 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
             {Math.round(progress)}%
           </span>
           <motion.div
-            className="absolute -inset-1 rounded-lg opacity-30 blur-sm bg-gradient-to-r from-purple-400 to-pink-400 -z-10"
+            className="absolute -inset-2 top-1 rounded-lg opacity-20 blur-md bg-gradient-to-r from-purple-400 to-pink-400 -z-20"
             animate={{ 
-              opacity: [0.3, 0.5, 0.3],
+              opacity: [0.2, 0.35, 0.2],
               scale: [1, 1.05, 1]
             }}
             transition={{ 
@@ -189,95 +189,7 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
         </div>
       </div>
 
-      {/* مؤشرات الخطوات التفاعلية */}
-      <div className="flex justify-between items-center px-2">
-        {Array.from({ length: totalSteps }, (_, index) => {
-          const isCompleted = completedSteps.includes(index)
-          const isCurrent = index === currentStep
-          const isPassed = index <= currentStep
-          
-          return (
-            <motion.div
-              key={index}
-              className="flex flex-col items-center gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              {/* دائرة الخطوة */}
-              <motion.div
-                className={`
-                  relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-lg sm:text-xl
-                  transition-all duration-300 border-2 shadow-lg
-                  ${isPassed 
-                    ? `bg-gradient-to-br ${motivation.color} border-transparent text-white shadow-lg` 
-                    : 'bg-white border-gray-300 text-gray-400'
-                  }
-                  ${isCurrent ? 'ring-4 ring-purple-200 ring-offset-2 scale-110' : ''}
-                `}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {isCompleted ? (
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </motion.div>
-                ) : (
-                  <span className="font-bold">
-                    {stepIcons[index]}
-                  </span>
-                )}
-                
-                {/* تأثير الإضاءة للخطوة الحالية */}
-                {isCurrent && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 opacity-20"
-                    animate={{ 
-                      scale: [1, 1.3, 1],
-                      opacity: [0.2, 0.4, 0.2]
-                    }}
-                    transition={{ 
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                )}
-              </motion.div>
 
-              {/* نقطة الاتصال بين الخطوات */}
-              {index < totalSteps - 1 && (
-                <div className="absolute top-5 left-1/2 w-full h-0.5 -translate-y-1/2 translate-x-6 z-0">
-                  <div className={`h-full transition-all duration-500 ${
-                    index < currentStep 
-                      ? `bg-gradient-to-r ${motivation.color}` 
-                      : 'bg-gray-200'
-                  }`} />
-                </div>
-              )}
-            </motion.div>
-          )
-        })}
-      </div>
-
-      {/* شريط تحفيزي سفلي */}
-      <motion.div 
-        className="text-center py-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-full border border-purple-100">
-          <Sparkles className="w-4 h-4 text-purple-500" />
-          <span className="text-sm font-medium text-purple-700 no-underline">
-            {progress < 100 ? "تسير بخطى رائعة!" : "تهانينا على الإنجاز! 🎉"}
-          </span>
-        </div>
-      </motion.div>
     </div>
   )
 }
