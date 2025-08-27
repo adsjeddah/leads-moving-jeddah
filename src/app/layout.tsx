@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/toaster'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { DomainFix } from '@/components/DomainFix'
 import { SocialProofNotification } from '@/components/SocialProofNotification'
+import { OnlineProvidersIndicator } from '@/components/OnlineProvidersIndicator'
 
 const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
@@ -57,6 +58,7 @@ export default function RootLayout({
         <Footer />
         <Toaster />
         <SocialProofNotification />
+        <OnlineProvidersIndicator />
       </body>
     </html>
   )
