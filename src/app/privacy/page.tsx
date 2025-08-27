@@ -110,7 +110,7 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc list-inside space-y-2 mt-2">
                 <li>واتساب: {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'}</li>
-                <li>البريد الإلكتروني: privacy@prokr.net</li>
+                <li>البريد الإلكتروني: privacy@prokr.sa</li>
               </ul>
             </section>
           </div>
