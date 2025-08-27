@@ -5,8 +5,9 @@ import Script from 'next/script'
 export default function GoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA4_ID
   const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID
+  const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-990599653'
 
-  if (!GA_ID && !GTM_ID) return null
+  if (!GA_ID && !GTM_ID && !GOOGLE_ADS_ID) return null
 
   return (
     <>
@@ -45,6 +46,28 @@ export default function GoogleAnalytics() {
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', '${GA_ID}');
+              `,
+            }}
+          />
+        </>
+      )}
+
+      {/* Google Ads Conversion Tracking */}
+      {GOOGLE_ADS_ID && (
+        <>
+          <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+          />
+          <Script
+            id="google-ads-script"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GOOGLE_ADS_ID}');
               `,
             }}
           />
