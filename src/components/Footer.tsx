@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Phone, MessageCircle, MapPin, Mail } from 'lucide-react'
 
 export function Footer() {
@@ -13,9 +14,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white">
-              بروكر
-            </h2>
+            <Image
+              src="/images/logo.png"
+              alt="بروكر - نقل عفش جدة"
+              width={120}
+              height={40}
+              className="h-8 w-auto object-contain"
+            />
             <p className="text-sm text-muted">
               نرتب لك نقل العفش في جدة بسرعة وأمان مع أفضل المنفذين
             </p>

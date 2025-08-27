@@ -14,7 +14,7 @@ export function AnimatedLogo() {
       }}
     >
       <Image
-        src="/images/logo.jpg"
+        src="/images/logo.png"
         alt="بروكر - نقل عفش جدة"
         width={150}
         height={50}
