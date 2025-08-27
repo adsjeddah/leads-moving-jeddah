@@ -275,7 +275,7 @@ export function Services() {
           <p className="text-gray-600 mb-6">لا تجد الخدمة التي تبحث عنها؟</p>
           <button 
             onClick={() => {
-              const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+              const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'
               window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('أريد الاستفسار عن خدمة مخصصة')}`, '_blank')
             }}
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"

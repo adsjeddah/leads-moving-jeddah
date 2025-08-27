@@ -109,7 +109,7 @@ export default function PrivacyPage() {
                 إذا كان لديك أي أسئلة حول سياسة الخصوصية هذه، يمكنك التواصل معنا عبر:
               </p>
               <ul className="list-disc list-inside space-y-2 mt-2">
-                <li>واتساب: {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'}</li>
+                <li>واتساب: {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'}</li>
                 <li>البريد الإلكتروني: privacy@prokr.sa</li>
               </ul>
             </section>

@@ -4,7 +4,7 @@ import { Phone, MessageCircle, MapPin, Mail } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'
   const whatsappUrl = `https://wa.me/${whatsappNumber}`
 
   return (

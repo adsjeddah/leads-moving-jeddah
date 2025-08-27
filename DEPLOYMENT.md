@@ -7,8 +7,8 @@
 
 #### متغيرات عامة (NEXT_PUBLIC_)
 ```
-NEXT_PUBLIC_PHONE_NUMBER=966500000000
-NEXT_PUBLIC_WHATSAPP_NUMBER=966500000000
+NEXT_PUBLIC_PHONE_NUMBER=966543654700
+NEXT_PUBLIC_WHATSAPP_NUMBER=966543654700
 NEXT_PUBLIC_GA4_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 ```
@@ -48,7 +48,7 @@ NODE_ENV=production
   "time_slot": "صباحي",
   "flexibility": "مرن",
   "customer_name": "أحمد محمد",
-  "customer_phone": "+966501234567",
+  "customer_phone": "+966543654700",
   "whatsapp_optin": true,
   "notes": "ملاحظات إضافية",
   "utm_source": "google",

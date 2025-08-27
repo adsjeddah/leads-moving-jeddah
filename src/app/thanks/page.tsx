@@ -19,7 +19,7 @@ function ThanksContent() {
   }, [searchParams])
 
   const handleWhatsAppClick = () => {
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'
     const message = `مرحبا، قدمت طلب نقل عفش عبر موقعكم واريد متابعة العروض`
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     

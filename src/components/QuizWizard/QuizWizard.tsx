@@ -763,7 +763,7 @@ export function QuizWizard() {
                   <div className="flex justify-center gap-3 sm:gap-4">
                     <button
                       type="button"
-                      onClick={() => window.open(`tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER || '966500000000'}`, '_self')}
+                      onClick={() => window.open(`tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER || '966543654700'}`, '_self')}
                       className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-sm"
                     >
                       <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
@@ -772,7 +772,7 @@ export function QuizWizard() {
                     <button
                       type="button"
                       onClick={() => {
-                        const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+                        const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'
                         window.open(`https://wa.me/${whatsappNumber}`, '_blank')
                       }}
                       className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-green-100 hover:bg-green-200 rounded-xl transition-colors text-sm"

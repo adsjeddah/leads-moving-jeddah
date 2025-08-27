@@ -35,7 +35,7 @@ export function Hero() {
   }
 
   const handleWhatsAppClick = () => {
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966543654700'
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('مرحبا، أريد الاستفسار عن خدمات نقل العفش')}`
     
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
