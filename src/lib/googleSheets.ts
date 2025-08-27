@@ -25,44 +25,44 @@ const getGoogleSheetsService = async () => {
   return google.sheets({ version: 'v4', auth })
 }
 
-// Headers for the Google Sheet
+// Headers for the Google Sheet - Arabic Names
 const SHEET_HEADERS = [
-  'timestamp',           // A - وقت الطلب
-  'lead_id',            // B - رقم الطلب
-  'status',             // C - حالة الطلب
-  'service_type',       // D - نوع الخدمة
-  'additional_services', // E - خدمات إضافية
-  'from_city',          // F - مدينة الاستلام
-  'from_district',      // G - حي الاستلام
-  'from_place_type',    // H - نوع المكان - استلام
-  'from_floor',         // I - الطابق - استلام
-  'from_elevator',      // J - مصعد متاح - استلام
-  'to_city',            // K - مدينة التسليم
-  'to_district',        // L - حي التسليم
-  'to_floor',           // M - الطابق - تسليم
-  'to_elevator',        // N - مصعد متاح - تسليم
-  'items',              // O - قائمة العناصر
-  'packaging_level',    // P - مستوى التغليف
-  'hoist_needed',       // Q - رافعة مطلوبة
-  'date_pref',          // R - تاريخ مفضل
-  'time_slot',          // S - فترة زمنية
-  'flexibility',        // T - مرونة الموعد
-  'customer_name',      // U - اسم العميل
-  'customer_phone',     // V - رقم العميل
-  'whatsapp_optin',     // W - موافقة واتساب
-  'notes',              // X - ملاحظات
-  'utm_source',         // Y - مصدر الزيارة
-  'utm_medium',         // Z - وسيط التسويق
-  'utm_campaign',       // AA - الحملة التسويقية
-  'utm_term',           // BB - المصطلح
-  'utm_content',        // CC - المحتوى
-  'gclid',              // DD - Google Click ID
-  'device',             // EE - نوع الجهاز
-  'page_path',          // FF - صفحة الدخول
-  'referrer',           // GG - الموقع المرجعي
-  'ip',                 // HH - عنوان IP
-  'currency',           // II - العملة
-  'sla_minutes'         // JJ - زمن الاستجابة
+  'وقت الطلب',           // A - timestamp
+  'رقم الطلب',          // B - lead_id
+  'حالة الطلب',         // C - status
+  'نوع الخدمة',         // D - service_type
+  'خدمات إضافية',       // E - additional_services
+  'مدينة الاستلام',     // F - from_city
+  'حي الاستلام',        // G - from_district
+  'نوع المكان (استلام)', // H - from_place_type
+  'الطابق (استلام)',     // I - from_floor
+  'مصعد متاح (استلام)',  // J - from_elevator
+  'مدينة التسليم',      // K - to_city
+  'حي التسليم',         // L - to_district
+  'الطابق (تسليم)',      // M - to_floor
+  'مصعد متاح (تسليم)',   // N - to_elevator
+  'قائمة العناصر',       // O - items
+  'مستوى التغليف',       // P - packaging_level
+  'رافعة مطلوبة',        // Q - hoist_needed
+  'التاريخ المفضل',      // R - date_pref
+  'الفترة الزمنية',      // S - time_slot
+  'مرونة الموعد',        // T - flexibility
+  'اسم العميل',          // U - customer_name
+  'رقم الهاتف',          // V - customer_phone
+  'موافقة واتساب',       // W - whatsapp_optin
+  'ملاحظات العميل',      // X - notes
+  'مصدر الزيارة',        // Y - utm_source
+  'وسيط التسويق',        // Z - utm_medium
+  'الحملة التسويقية',     // AA - utm_campaign
+  'المصطلح التسويقي',     // BB - utm_term
+  'محتوى الحملة',        // CC - utm_content
+  'معرف جوجل للنقرة',    // DD - gclid
+  'نوع الجهاز',          // EE - device
+  'صفحة الدخول',         // FF - page_path
+  'الموقع المرجعي',      // GG - referrer
+  'عنوان الـ IP',        // HH - ip
+  'العملة',             // II - currency
+  'زمن الاستجابة (دقيقة)' // JJ - sla_minutes
 ]
 
 // Check if headers exist, if not, add them
