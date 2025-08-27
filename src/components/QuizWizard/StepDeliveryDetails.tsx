@@ -1,13 +1,8 @@
 import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import jeddahDistricts from '@/data/jeddah_districts.json'
+import saudiCities from '@/data/saudi_cities.json'
 import { formatNumberInput } from '@/lib/arabicToEnglish'
-
-const saudiCities = [
-  'جدة', 'الرياض', 'مكة', 'المدينة المنورة', 'الدمام', 'الخبر', 'الطائف', 
-  'تبوك', 'بريدة', 'خميس مشيط', 'أبها', 'جازان', 'نجران', 'الجبيل',
-  'ينبع', 'القطيف', 'الأحساء', 'حائل', 'عرعر', 'سكاكا', 'الباحة'
-]
 
 export function StepDeliveryDetails() {
   const { register, watch, setValue, formState: { errors } } = useFormContext()
@@ -27,13 +22,13 @@ export function StepDeliveryDetails() {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             المدينة *
           </label>
-          {serviceType === 'بين_مدن' ? (
+          {serviceType === 'من_وإلى_جدة' ? (
             <select
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
               {...register('to_city')}
             >
-              <option value="">اختر المدينة</option>
-              {saudiCities.map((city) => (
+              <option value="">اختر مدينة التسليم</option>
+              {saudiCities.cities.map((city) => (
                 <option key={city} value={city}>
                   {city}
                 </option>
@@ -55,9 +50,19 @@ export function StepDeliveryDetails() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            الحي *
+            {serviceType === 'من_وإلى_جدة' && toCity && toCity !== 'جدة' 
+              ? 'الحي/المنطقة *' 
+              : 'الحي *'
+            }
           </label>
-          {toCity === 'جدة' || !serviceType || serviceType === 'داخل_جدة' ? (
+          {serviceType === 'من_وإلى_جدة' && toCity && toCity !== 'جدة' ? (
+            <input
+              type="text"
+              placeholder="أدخل الحي أو المنطقة"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+              {...register('to_district')}
+            />
+          ) : (
             <select
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
               {...register('to_district')}
@@ -69,13 +74,6 @@ export function StepDeliveryDetails() {
                 </option>
               ))}
             </select>
-          ) : (
-            <input
-              type="text"
-              placeholder="اكتب اسم الحي"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
-              {...register('to_district')}
-            />
           )}
           {errors.to_district && (
             <p className="text-red-500 text-sm mt-1">{errors.to_district.message as string}</p>

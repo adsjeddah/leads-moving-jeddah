@@ -25,23 +25,23 @@ const getGoogleSheetsService = async () => {
   return google.sheets({ version: 'v4', auth })
 }
 
-// Headers for the Google Sheet - Arabic Names
+// Headers for the Google Sheet - Arabic Names (Enhanced for City/District Logic)
 const SHEET_HEADERS = [
   'وقت الطلب',           // A - timestamp
-  'رقم الطلب',          // B - lead_id
+  'رقم الطلب',          // B - lead_id  
   'حالة الطلب',         // C - status
-  'نوع الخدمة',         // D - service_type
+  'نوع الخدمة',         // D - service_type (داخل_جدة أو من_وإلى_جدة)
   'خدمات إضافية',       // E - additional_services
-  'مدينة الاستلام',     // F - from_city
-  'حي الاستلام',        // G - from_district
+  'مدينة الاستلام',     // F - from_city (جدة أو مدن أخرى)
+  'حي/منطقة الاستلام',   // G - from_district (حي جدة أو منطقة في مدينة أخرى)
   'نوع المكان (استلام)', // H - from_place_type
   'الطابق (استلام)',     // I - from_floor
   'مصعد متاح (استلام)',  // J - from_elevator
-  'مدينة التسليم',      // K - to_city
-  'حي التسليم',         // L - to_district
+  'مدينة التسليم',      // K - to_city (جدة أو مدن أخرى)
+  'حي/منطقة التسليم',    // L - to_district (حي جدة أو منطقة في مدينة أخرى)
   'الطابق (تسليم)',      // M - to_floor
   'مصعد متاح (تسليم)',   // N - to_elevator
-  'قائمة العناصر',       // O - items
+  'قائمة العناصر والكميات', // O - items
   'مستوى التغليف',       // P - packaging_level
   'رافعة مطلوبة',        // Q - hoist_needed
   'التاريخ المفضل',      // R - date_pref

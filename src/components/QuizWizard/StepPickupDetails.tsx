@@ -2,6 +2,7 @@ import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Home, Building, Building2, Warehouse } from 'lucide-react'
 import jeddahDistricts from '@/data/jeddah_districts.json'
+import saudiCities from '@/data/saudi_cities.json'
 import { formatNumberInput } from '@/lib/arabicToEnglish'
 
 const placeTypes = [
@@ -14,6 +15,8 @@ const placeTypes = [
 export function StepPickupDetails() {
   const { register, watch, setValue, formState: { errors } } = useFormContext()
   const selectedPlaceType = watch('from_place_type')
+  const serviceType = watch('service_type')
+  const fromCity = watch('from_city')
 
   return (
     <div className="space-y-6">
@@ -22,36 +25,65 @@ export function StepPickupDetails() {
         <p className="text-gray-600">أدخل معلومات المكان الذي سنستلم منه العفش</p>
       </div>
 
-      {/* City & District */}
+      {/* City & District - Dynamic based on service type */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            المدينة
+            المدينة *
           </label>
-          <input
-            type="text"
-            defaultValue="جدة"
-            disabled
-            className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-700"
-            {...register('from_city')}
-          />
+          {serviceType === 'من_وإلى_جدة' ? (
+            <select
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+              {...register('from_city')}
+            >
+              <option value="">اختر مدينة الاستلام</option>
+              {saudiCities.cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              defaultValue="جدة"
+              disabled
+              className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-700"
+              {...register('from_city')}
+            />
+          )}
+          {errors.from_city && (
+            <p className="text-red-500 text-sm mt-1">{errors.from_city.message as string}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            الحي *
+            {serviceType === 'من_وإلى_جدة' && fromCity && fromCity !== 'جدة' 
+              ? 'الحي/المنطقة *' 
+              : 'الحي *'
+            }
           </label>
-          <select
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
-            {...register('from_district')}
-          >
-            <option value="">اختر الحي</option>
-            {jeddahDistricts.districts.map((district) => (
-              <option key={district} value={district}>
-                {district}
-              </option>
-            ))}
-          </select>
+          {serviceType === 'من_وإلى_جدة' && fromCity && fromCity !== 'جدة' ? (
+            <input
+              type="text"
+              placeholder="أدخل الحي أو المنطقة"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+              {...register('from_district')}
+            />
+          ) : (
+            <select
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+              {...register('from_district')}
+            >
+              <option value="">اختر الحي</option>
+              {jeddahDistricts.districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+          )}
           {errors.from_district && (
             <p className="text-red-500 text-sm mt-1">{errors.from_district.message as string}</p>
           )}
