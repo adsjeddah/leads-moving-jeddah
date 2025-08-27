@@ -67,14 +67,22 @@ export function StepService() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary to-emerald-600 rounded-full mb-4">
-            <Sparkles className="w-8 h-8 text-white" />
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-18 h-18 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 shadow-xl relative">
+            <Sparkles className="w-9 h-9 text-white animate-pulse" />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full animate-ping opacity-20"></div>
           </div>
-          <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-slate-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
             اختر نوع الخدمة الأساسية
           </h2>
-          <p className="text-gray-600 text-lg">حدد الخدمة المطلوبة وسنوفر لك أفضل العروض</p>
+          <p className="text-gray-600 text-xl max-w-3xl mx-auto leading-relaxed">
+            حدد الخدمة المطلوبة وسنوفر لك أفضل العروض من المختصين المعتمدين
+          </p>
+          <div className="mt-4 flex justify-center gap-2">
+            <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-pink-400 to-red-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -93,10 +101,10 @@ export function StepService() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`
-                  relative p-6 rounded-2xl transition-all text-right group overflow-hidden
+                  relative p-7 rounded-3xl transition-all text-right group overflow-hidden border-2
                   ${isSelected 
-                    ? 'ring-2 ring-primary ring-offset-2 shadow-xl' 
-                    : 'border-2 border-gray-200 hover:border-primary/50 hover:shadow-lg'
+                    ? 'border-transparent bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 shadow-2xl ring-4 ring-purple-200/50' 
+                    : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-xl hover:bg-gradient-to-br hover:from-purple-50/30 hover:to-indigo-50/30'
                   }
                 `}
               >
@@ -106,34 +114,82 @@ export function StepService() {
                 {/* Selected indicator */}
                 {isSelected && (
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute top-3 left-3"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    className="absolute top-4 left-4 z-20"
                   >
-                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
                     </div>
                   </motion.div>
                 )}
 
+                {/* Floating sparkles for selected option */}
+                {isSelected && (
+                  <>
+                    <motion.div
+                      animate={{ 
+                        y: [0, -8, 0],
+                        rotate: [0, 180, 360] 
+                      }}
+                      transition={{ 
+                        duration: 2, 
+                        repeat: Infinity,
+                        ease: "easeInOut" 
+                      }}
+                      className="absolute top-6 right-6 text-purple-400"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                    </motion.div>
+                    <motion.div
+                      animate={{ 
+                        y: [0, -6, 0],
+                        rotate: [0, -180, -360] 
+                      }}
+                      transition={{ 
+                        duration: 2.5, 
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5
+                      }}
+                      className="absolute bottom-6 right-8 text-indigo-400"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                    </motion.div>
+                  </>
+                )}
+
                 <div className="relative">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-5">
                     <div className={`
-                      w-14 h-14 rounded-xl flex items-center justify-center transition-all
+                      w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 relative
                       ${isSelected 
-                        ? 'bg-gradient-to-br ' + option.color + ' shadow-lg' 
-                        : 'bg-gray-100 group-hover:bg-primary/10'
+                        ? `bg-gradient-to-br ${option.color} shadow-xl scale-110` 
+                        : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-purple-100 group-hover:to-indigo-100 group-hover:scale-105'
                       }
                     `}>
-                      <Icon className={`w-7 h-7 ${isSelected ? 'text-white' : 'text-gray-700 group-hover:text-primary'}`} />
+                      <Icon className={`w-8 h-8 transition-all ${isSelected ? 'text-white' : 'text-gray-700 group-hover:text-purple-600'}`} />
+                      {isSelected && (
+                        <div className={`absolute inset-0 bg-gradient-to-br ${option.color} rounded-2xl animate-pulse opacity-30`}></div>
+                      )}
                     </div>
                     <div className="flex-1">
-                      <h3 className={`font-bold text-xl mb-2 ${isSelected ? 'text-primary' : 'text-gray-900'}`}>
+                      <h3 className={`font-bold text-2xl mb-3 transition-all ${isSelected ? 'bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent' : 'text-gray-900 group-hover:text-purple-800'}`}>
                         {option.label}
                       </h3>
-                      <p className={`text-sm ${isSelected ? 'text-gray-700' : 'text-gray-500'}`}>
+                      <p className={`text-base leading-relaxed transition-all ${isSelected ? 'text-gray-800 font-medium' : 'text-gray-600 group-hover:text-gray-700'}`}>
                         {option.description}
                       </p>
+                      {isSelected && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-3 flex items-center gap-2"
+                        >
+                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"></div>
+                          <span className="text-sm text-emerald-600 font-semibold">تم الاختيار ✨</span>
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -150,11 +206,22 @@ export function StepService() {
           animate={{ opacity: 1, height: 'auto' }}
           transition={{ duration: 0.5 }}
         >
-          <div className="border-t pt-8">
-            <h3 className="text-xl font-bold mb-2">خدمات إضافية (اختياري)</h3>
-            <p className="text-gray-600 mb-6">يمكنك إضافة هذه الخدمات لطلبك</p>
+          <div className="border-t-2 border-gradient-to-r from-purple-200 to-indigo-200 pt-10 mt-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent">
+                  خدمات إضافية (اختياري)
+                </h3>
+              </div>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                أضف المزيد من الخدمات المتخصصة لتجربة نقل مثالية وحماية أفضل لممتلكاتك
+              </p>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-5">
               {additionalServices.map((addon) => {
                 const Icon = addon.icon
                 const isSelected = selectedAddons.includes(addon.id)
@@ -164,29 +231,34 @@ export function StepService() {
                     key={addon.id}
                     type="button"
                     onClick={() => toggleAddon(addon.id)}
-                    whileHover={{ x: -4 }}
+                    whileHover={{ x: -8, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`
-                      w-full p-4 rounded-xl border-2 transition-all text-right flex items-center gap-4 group
+                      w-full p-6 rounded-2xl border-2 transition-all text-right flex items-center gap-5 group relative overflow-hidden
                       ${isSelected 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                        ? 'border-transparent bg-gradient-to-br from-purple-50 to-indigo-50 shadow-lg ring-2 ring-purple-200' 
+                        : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md hover:bg-gradient-to-br hover:from-purple-50/20 hover:to-indigo-50/20'
                       }
                     `}
                   >
+                    {/* Background pattern for selected */}
+                    {isSelected && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5"></div>
+                    )}
+
                     {/* Checkbox */}
                     <div className={`
-                      w-6 h-6 rounded-md border-2 transition-all flex items-center justify-center
+                      w-8 h-8 rounded-xl border-2 transition-all flex items-center justify-center relative z-10
                       ${isSelected 
-                        ? 'bg-primary border-primary' 
-                        : 'border-gray-300 group-hover:border-primary/50'
+                        ? 'bg-gradient-to-r from-emerald-400 to-teal-500 border-transparent shadow-lg' 
+                        : 'border-gray-300 group-hover:border-purple-400 bg-white'
                       }
                     `}>
                       {isSelected && (
                         <motion.svg
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-4 h-4 text-white"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          className="w-5 h-5 text-white"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -198,24 +270,59 @@ export function StepService() {
                     
                     {/* Icon */}
                     <div className={`
-                      w-12 h-12 rounded-lg flex items-center justify-center transition-all
+                      w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 relative z-10
                       ${isSelected 
-                        ? 'bg-primary/20' 
-                        : 'bg-gray-100 group-hover:bg-primary/10'
+                        ? 'bg-gradient-to-br from-purple-400 to-indigo-500 shadow-lg scale-110' 
+                        : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-purple-100 group-hover:to-indigo-100 group-hover:scale-105'
                       }
                     `}>
-                      <Icon className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-gray-600'}`} />
+                      <Icon className={`w-7 h-7 transition-all ${isSelected ? 'text-white' : 'text-gray-600 group-hover:text-purple-600'}`} />
+                      {isSelected && (
+                        <motion.div
+                          animate={{ rotate: [0, 360] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                          className="absolute inset-0 border-2 border-white/30 rounded-2xl"
+                        ></motion.div>
+                      )}
                     </div>
                     
                     {/* Content */}
-                    <div className="flex-1">
-                      <h4 className={`font-semibold ${isSelected ? 'text-primary' : 'text-gray-900'}`}>
+                    <div className="flex-1 relative z-10">
+                      <h4 className={`font-bold text-lg mb-2 transition-all ${isSelected ? 'bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent' : 'text-gray-900 group-hover:text-purple-800'}`}>
                         {addon.label}
                       </h4>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className={`text-sm leading-relaxed transition-all ${isSelected ? 'text-gray-700 font-medium' : 'text-gray-500 group-hover:text-gray-600'}`}>
                         {addon.description}
                       </p>
+                      {isSelected && (
+                        <motion.div 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="mt-3 flex items-center gap-2"
+                        >
+                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs text-emerald-600 font-semibold">مُضاف للطلب 🎯</span>
+                        </motion.div>
+                      )}
                     </div>
+
+                    {/* Floating sparkle for selected items */}
+                    {isSelected && (
+                      <motion.div
+                        animate={{ 
+                          y: [0, -10, 0],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{ 
+                          duration: 2, 
+                          repeat: Infinity,
+                          ease: "easeInOut" 
+                        }}
+                        className="absolute top-4 right-4 z-10"
+                      >
+                        <Sparkles className="w-4 h-4 text-amber-400" />
+                      </motion.div>
+                    )}
                   </motion.button>
                 )
               })}
