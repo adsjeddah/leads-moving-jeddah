@@ -65,8 +65,8 @@ export function Header() {
           {/* Button content */}
           <div className="relative flex items-center gap-1 sm:gap-2">
             <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
-            <span className="hidden sm:inline text-sm sm:text-base">اطلب الخدمة الآن</span>
-            <span className="sm:hidden text-xs">اطلب الآن</span>
+            <span className="hidden sm:inline text-sm sm:text-base">اطلب عروض أسعار</span>
+            <span className="sm:hidden text-xs">عروض أسعار</span>
             <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 group-hover:-translate-x-1 transition-transform" />
           </div>
         </motion.button>

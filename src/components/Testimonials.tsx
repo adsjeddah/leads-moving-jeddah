@@ -360,7 +360,7 @@ export function Testimonials() {
             className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
           >
             <Award className="w-6 h-6" />
-            اطلب خدمتك الآن
+            اطلب عروض أسعار
           </button>
         </motion.div>
       </div>

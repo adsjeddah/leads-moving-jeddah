@@ -45,7 +45,7 @@ export function CTASection() {
           </h2>
           
           <p className="text-xl text-gray-600 mb-8">
-            خلاص سجل طلبك وخلنا نجيب لك <span className="font-bold text-purple-600">أفضل 3 عروض</span> تختار منها اللي يناسبك
+            خلاص اطلب عروض أسعارك وخلنا نجيب لك <span className="font-bold text-purple-600">أفضل 3 عروض</span> تختار منها اللي يناسبك
           </p>
 
           {/* Features */}
@@ -89,7 +89,7 @@ export function CTASection() {
             {/* Button content */}
             <div className="relative flex items-center justify-center gap-3">
               <Sparkles className="w-6 h-6 animate-pulse" />
-              <span>سجل طلبك الحين - مجاناً</span>
+              <span>احصل على عروض أسعار مجاناً</span>
               <ArrowLeft className="w-6 h-6 group-hover:-translate-x-2 transition-transform" />
             </div>
           </motion.button>

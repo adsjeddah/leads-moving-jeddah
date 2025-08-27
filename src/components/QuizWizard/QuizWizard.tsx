@@ -859,7 +859,7 @@ export function QuizWizard() {
                         >
                           <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                         </motion.div>
-                        <span>أرسل طلبي الحين</span>
+                        <span>احصل على عروض الأسعار</span>
                       </>
                     )}
                   </motion.button>

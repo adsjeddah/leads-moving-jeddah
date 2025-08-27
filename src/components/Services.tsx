@@ -237,7 +237,7 @@ export function Services() {
                         group-hover:shadow-lg flex items-center justify-center gap-2
                       `}
                     >
-                      <span>اطلب الآن</span>
+                      <span>اطلب عروض أسعار</span>
                       <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     </button>
                   </div>

@@ -106,7 +106,7 @@ export function Hero() {
               </h1>
               
               <p className="text-xl md:text-2xl text-gray-600 leading-relaxed">
-                بس سجل طلبك وحنا <span className="font-semibold text-gray-900">نجيب لك 3 عروض أسعار</span> من أحسن شركات النقل، وتختار اللي يناسبك - <span className="text-green-600 font-bold">ببلاش تماماً</span>
+                بس اطلب عروض أسعارك وحنا <span className="font-semibold text-gray-900">نجيب لك 3 عروض أسعار</span> من أحسن شركات النقل، وتختار اللي يناسبك - <span className="text-green-600 font-bold">ببلاش تماماً</span>
               </p>
 
               {/* Features List - Updated with Saudi dialect */}
@@ -162,7 +162,7 @@ export function Hero() {
                 onClick={goToOrderPage}
                 className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-                <span>ابدأ الطلب المجاني</span>
+                <span>احصل على عروض أسعار مجاناً</span>
                 <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" />
               </Button>
               
