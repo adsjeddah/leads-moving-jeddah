@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { leadFormSchema } from '@/lib/schemas'
 import { generateLeadId, normalizePhone } from '@/lib/utils'
+import { addLeadToSheet, testGoogleSheetsConnection } from '@/lib/googleSheets'
 
 // Rate limiting - simple in-memory store
 const rateLimitStore = new Map<string, number[]>()
@@ -119,36 +120,56 @@ export async function POST(request: NextRequest) {
       sla_minutes: 30
     }
     
-    // Check for Make.com webhook URL
-    const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL
-    
-    if (!makeWebhookUrl) {
-      console.error('MAKE_WEBHOOK_URL not configured')
-      // In development, return success without sending to webhook
+    // Test Google Sheets connection first
+    const connectionTest = await testGoogleSheetsConnection()
+    if (!connectionTest.success) {
+      console.error('Google Sheets connection failed:', connectionTest.error)
+      
+      // In development, return success without sending to sheets
       if (process.env.NODE_ENV === 'development') {
-        console.log('Development mode - would send to webhook:', webhookData)
+        console.log('Development mode - would send to sheets:', webhookData)
         return NextResponse.json({
           success: true,
           leadId,
-          message: 'تم استلام طلبك بنجاح (Development Mode)'
+          message: 'تم استلام طلبك بنجاح (Development Mode - Sheets Unavailable)'
         })
       }
-      throw new Error('Make.com webhook URL not configured')
+      throw new Error('Google Sheets connection failed: ' + connectionTest.error)
     }
     
-    // Send to Make.com webhook
-    const webhookResponse = await fetch(makeWebhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(webhookData)
-    })
-    
-    if (!webhookResponse.ok) {
-      const errorText = await webhookResponse.text()
-      console.error('Make.com webhook error:', errorText)
-      throw new Error('Failed to submit to Make.com webhook')
+    // Add lead to Google Sheets
+    try {
+      await addLeadToSheet(webhookData)
+      console.log(`Lead ${leadId} successfully added to Google Sheets`)
+    } catch (sheetsError) {
+      console.error('Error adding to Google Sheets:', sheetsError)
+      
+      // Fallback to Make.com if available
+      const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL
+      if (makeWebhookUrl) {
+        console.log('Falling back to Make.com webhook...')
+        try {
+          const webhookResponse = await fetch(makeWebhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookData)
+          })
+          
+          if (webhookResponse.ok) {
+            console.log('Successfully sent to Make.com as fallback')
+          } else {
+            console.error('Make.com fallback also failed')
+            throw new Error('Both Google Sheets and Make.com webhook failed')
+          }
+        } catch (makeError) {
+          console.error('Make.com fallback error:', makeError)
+          throw new Error('Both Google Sheets and Make.com webhook failed')
+        }
+      } else {
+        throw new Error('Google Sheets failed and no Make.com fallback available')
+      }
     }
     
     return NextResponse.json({
