@@ -11,7 +11,10 @@ export const leadFormSchema = z.object({
   from_place_type: z.enum(['شقة', 'فيلا', 'مكتب', 'مستودع'], {
     errorMap: () => ({ message: 'يرجى اختيار نوع المكان' })
   }),
-  from_floor: z.number().min(0, 'يرجى إدخال رقم الطابق').max(50, 'الحد الأقصى 50 طابق'),
+  from_floor: z.union([
+    z.string().transform((val) => parseInt(val) || 0),
+    z.number()
+  ]).optional().default(0),
   from_elevator: z.enum(['yes', 'no'], {
     errorMap: () => ({ message: 'يرجى اختيار وجود المصعد' })
   }),
@@ -19,7 +22,10 @@ export const leadFormSchema = z.object({
   // To location
   to_city: z.string().min(1, 'يرجى اختيار مدينة التسليم'),
   to_district: z.string().min(1, 'يرجى اختيار حي التسليم'),
-  to_floor: z.number().min(0, 'يرجى إدخال رقم الطابق').max(50, 'الحد الأقصى 50 طابق'),
+  to_floor: z.union([
+    z.string().transform((val) => parseInt(val) || 0),
+    z.number()
+  ]).optional().default(0),
   to_elevator: z.enum(['yes', 'no'], {
     errorMap: () => ({ message: 'يرجى اختيار وجود المصعد' })
   }),

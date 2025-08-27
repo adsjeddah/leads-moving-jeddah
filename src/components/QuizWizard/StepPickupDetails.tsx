@@ -39,11 +39,7 @@ export function StepPickupDetails() {
     return { cities: [] }
   }, [serviceType])
   
-  // Memoized handlers to prevent recreation
-  const handleFloorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatNumberInput(e.target.value)
-    setValue('from_floor', parseInt(formatted) || 0)
-  }, [setValue])
+
 
   return (
     <div className="space-y-6">
@@ -168,23 +164,14 @@ export function StepPickupDetails() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            الطابق *
+            الطابق
           </label>
           <input
             type="text"
             inputMode="numeric"
-            placeholder="0"
+            placeholder="0 (اختياري)"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
-            {...register('from_floor', {
-              setValueAs: (value) => {
-                const formatted = formatNumberInput(value)
-                return formatted === '' ? 0 : parseInt(formatted, 10)
-              },
-              onChange: (e) => {
-                const formatted = formatNumberInput(e.target.value)
-                e.target.value = formatted
-              }
-            })}
+            {...register('from_floor')}
           />
           {errors.from_floor && (
             <p className="text-red-500 text-sm mt-1">{errors.from_floor.message as string}</p>

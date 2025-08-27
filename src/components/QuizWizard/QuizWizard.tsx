@@ -169,7 +169,7 @@ export function QuizWizard() {
       const distanceMultiplier = (formData.from_district && formData.to_district && formData.from_district !== formData.to_district) ? 1.3 : 1
       
       // Calculate floor multiplier
-      const floorMultiplier = formData.from_floor && formData.from_floor > 3 ? 1.2 : 1
+      const floorMultiplier = (formData.from_floor && Number(formData.from_floor) > 3) ? 1.2 : 1
       
       const estimated = Math.round(basePrice * distanceMultiplier * floorMultiplier)
       setEstimatedPrice(`${estimated} - ${estimated + 300} ريال`)
@@ -344,9 +344,9 @@ export function QuizWizard() {
       case 0:
         return ['service_type']
       case 1:
-        return ['from_city', 'from_district', 'from_place_type', 'from_floor', 'from_elevator']
+        return ['from_city', 'from_district', 'from_place_type', 'from_elevator']
       case 2:
-        return ['to_city', 'to_district', 'to_floor', 'to_elevator']
+        return ['to_city', 'to_district', 'to_elevator']
       case 3:
         return ['items', 'packaging_level', 'hoist_needed']
       case 4:

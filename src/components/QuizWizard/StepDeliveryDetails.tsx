@@ -24,11 +24,7 @@ export function StepDeliveryDetails() {
     return { cities: [] }
   }, [serviceType])
   
-  // Memoized handlers to prevent recreation
-  const handleFloorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatNumberInput(e.target.value)
-    setValue('to_floor', parseInt(formatted) || 0)
-  }, [setValue])
+
 
   return (
     <div className="space-y-6">
@@ -117,15 +113,14 @@ export function StepDeliveryDetails() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            الطابق *
+            الطابق
           </label>
           <input
             type="text"
             inputMode="numeric"
-            placeholder="0"
+            placeholder="0 (اختياري)"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
             {...register('to_floor')}
-            onChange={handleFloorChange}
           />
           {errors.to_floor && (
             <p className="text-red-500 text-sm mt-1">{errors.to_floor.message as string}</p>
