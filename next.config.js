@@ -66,7 +66,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.prokr.net prokr.net www.prokr.net data: blob:; connect-src 'self' *.prokr.net prokr.net www.prokr.net https://*.make.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com;",
+            value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.prokr.net prokr.net www.prokr.net data: blob:; connect-src 'self' *.prokr.net prokr.net www.prokr.net https://*.make.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com;",
           },
         ],
       },

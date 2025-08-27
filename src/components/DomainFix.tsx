@@ -13,6 +13,39 @@ export function DomainFix() {
         return
       }
       
+      // Fix any existing elements with wrong URLs
+      const fixExistingUrls = () => {
+        // Fix all links
+        const existingLinks = document.querySelectorAll('a[href*="prokr.sa"], link[href*="prokr.sa"]')
+        existingLinks.forEach((link) => {
+          const href = link.getAttribute('href')
+          if (href && href.includes('prokr.sa')) {
+            link.setAttribute('href', href.replace('prokr.sa', 'www.prokr.net'))
+          }
+        })
+
+        // Fix all scripts
+        const existingScripts = document.querySelectorAll('script[src*="prokr.sa"]')
+        existingScripts.forEach((script) => {
+          const src = script.getAttribute('src')
+          if (src && src.includes('prokr.sa')) {
+            script.setAttribute('src', src.replace('prokr.sa', 'www.prokr.net'))
+          }
+        })
+
+        // Fix all images
+        const existingImages = document.querySelectorAll('img[src*="prokr.sa"]')
+        existingImages.forEach((image) => {
+          const src = image.getAttribute('src')
+          if (src && src.includes('prokr.sa')) {
+            image.setAttribute('src', src.replace('prokr.sa', 'www.prokr.net'))
+          }
+        })
+      }
+
+      // Fix existing URLs immediately
+      fixExistingUrls()
+
       // Override any incorrect prefetch URLs
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -35,6 +68,15 @@ export function DomainFix() {
                 const src = script.getAttribute('src')
                 if (src && src.includes('prokr.sa')) {
                   script.setAttribute('src', src.replace('prokr.sa', 'www.prokr.net'))
+                }
+              })
+
+              // Fix any image sources that point to prokr.sa
+              const images = element.querySelectorAll('img[src*="prokr.sa"]')
+              images.forEach((image) => {
+                const src = image.getAttribute('src')
+                if (src && src.includes('prokr.sa')) {
+                  image.setAttribute('src', src.replace('prokr.sa', 'www.prokr.net'))
                 }
               })
             }
