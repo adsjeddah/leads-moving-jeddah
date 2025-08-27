@@ -79,7 +79,7 @@ export function QuizWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
   const [estimatedPrice, setEstimatedPrice] = useState<string | null>(null)
-  const [showCelebration, setShowCelebration] = useState(false)
+
   const [isMobile, setIsMobile] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
@@ -96,8 +96,6 @@ export function QuizWizard() {
       from_city: 'جدة',
       items: [],
       whatsapp_optin: false,
-      packaging_level: 'basic',
-      flexibility: 'flexible',
       ...getUTMParams(),
       device: getDeviceType(),
       page_path: getPagePath(),
@@ -153,11 +151,7 @@ export function QuizWizard() {
     }, 100)
   }, [])
 
-  // Celebration effect
-  const triggerCelebration = useCallback(() => {
-    setShowCelebration(true)
-    setTimeout(() => setShowCelebration(false), 2000)
-  }, [])
+
 
   // Calculate estimated price based on selections
   useEffect(() => {
@@ -198,9 +192,6 @@ export function QuizWizard() {
         }
         return
       }
-      
-      // Trigger celebration effect
-      triggerCelebration()
       
       if (!completedSteps.includes(currentStep)) {
         setCompletedSteps([...completedSteps, currentStep])
@@ -348,9 +339,9 @@ export function QuizWizard() {
       case 2:
         return ['to_city', 'to_district', 'to_elevator']
       case 3:
-        return ['items', 'packaging_level', 'hoist_needed']
+        return ['items_type', 'hoist_needed']
       case 4:
-        return ['date_pref', 'time_slot', 'flexibility', 'customer_name', 'customer_phone']
+        return ['date_pref', 'customer_name', 'customer_phone']
       default:
         return []
     }
@@ -426,67 +417,7 @@ export function QuizWizard() {
       className="relative py-12 sm:py-20 bg-gradient-to-br from-purple-50 via-indigo-50/50 to-blue-50 overflow-hidden scroll-smooth" 
       dir="rtl"
     >
-      {/* Celebration Animation Overlay */}
-      <AnimatePresence>
-        {showCelebration && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 pointer-events-none"
-          >
-            {/* Confetti and sparkles */}
-            {[...Array(isMobile ? 20 : 40)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ 
-                  opacity: 0,
-                  scale: 0,
-                  x: Math.random() * window.innerWidth,
-                  y: Math.random() * window.innerHeight,
-                  rotate: 0
-                }}
-                animate={{ 
-                  opacity: [0, 1, 0],
-                  scale: [0, 1.5, 0],
-                  y: window.innerHeight + 100,
-                  rotate: 360 * 3
-                }}
-                transition={{
-                  duration: 2,
-                  delay: Math.random() * 0.5,
-                  ease: "easeOut"
-                }}
-                className={`absolute w-3 h-3 ${
-                  i % 4 === 0 ? 'bg-yellow-400' :
-                  i % 4 === 1 ? 'bg-pink-400' :
-                  i % 4 === 2 ? 'bg-blue-400' : 'bg-green-400'
-                } rounded-full`}
-              />
-            ))}
-            
-            {/* Mobile-specific celebration effects */}
-            {isMobile && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.2, 0] }}
-                transition={{ duration: 1.5 }}
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-              >
-                <div className="text-6xl">🎉</div>
-              </motion.div>
-            )}
 
-            {/* Success ripple effect */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0.8 }}
-              animate={{ scale: 4, opacity: 0 }}
-              transition={{ duration: 1.5 }}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-r from-green-400 to-blue-500"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Enhanced Animated Background Pattern */}
       <div className="absolute inset-0 opacity-[0.05]">

@@ -21,48 +21,18 @@ const serviceOptions = [
   },
 ]
 
-const additionalServices = [
-  { 
-    id: 'packing', 
-    label: 'تغليف احترافي', 
-    icon: Package,
-    description: 'حماية كاملة للأثاث من الخدوش والكسر'
-  },
-  { 
-    id: 'assembly', 
-    label: 'فك وتركيب', 
-    icon: Wrench,
-    description: 'فك وتركيب جميع أنواع الأثاث'
-  },
-  { 
-    id: 'storage', 
-    label: 'تخزين مؤقت', 
-    icon: Archive,
-    description: 'مستودعات آمنة ومكيفة'
-  },
-]
+
 
 export function StepService() {
   const { register, watch, setValue } = useFormContext()
   
   // Minimize watches to reduce re-renders
   const selectedService = watch('service_type')
-  const watchedAddons = watch('additional_services')
-  const selectedAddons = useMemo(() => watchedAddons || [], [watchedAddons])
 
   // Memoized handlers to prevent recreation on every render
   const handleServiceSelect = useCallback((value: string) => {
     setValue('service_type', value, { shouldValidate: true })
   }, [setValue])
-
-  const toggleAddon = useCallback((addonId: string) => {
-    const current = selectedAddons || []
-    if (current.includes(addonId)) {
-      setValue('additional_services', current.filter((id: string) => id !== addonId))
-    } else {
-      setValue('additional_services', [...current, addonId])
-    }
-  }, [selectedAddons, setValue])
 
   return (
     <div className="space-y-8">
@@ -204,145 +174,9 @@ export function StepService() {
         </div>
       </motion.div>
 
-      {/* Additional Services */}
-      {selectedService && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="border-t-2 border-gradient-to-r from-purple-200 to-indigo-200 pt-10 mt-8">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent">
-                  خدمات إضافية (اختياري)
-                </h3>
-              </div>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                أضف المزيد من الخدمات المتخصصة لتجربة نقل مثالية وحماية أفضل لممتلكاتك
-              </p>
-            </div>
-            
-            <div className="space-y-5">
-              {additionalServices.map((addon) => {
-                const Icon = addon.icon
-                const isSelected = selectedAddons.includes(addon.id)
-                
-                return (
-                  <motion.button
-                    key={addon.id}
-                    type="button"
-                    onClick={() => toggleAddon(addon.id)}
-                    whileHover={{ x: -8, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`
-                      w-full p-6 rounded-2xl border-2 transition-all text-right flex items-center gap-5 group relative overflow-hidden
-                      ${isSelected 
-                        ? 'border-transparent bg-gradient-to-br from-purple-50 to-indigo-50 shadow-lg ring-2 ring-purple-200' 
-                        : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md hover:bg-gradient-to-br hover:from-purple-50/20 hover:to-indigo-50/20'
-                      }
-                    `}
-                  >
-                    {/* Background pattern for selected */}
-                    {isSelected && (
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5"></div>
-                    )}
-
-                    {/* Checkbox */}
-                    <div className={`
-                      w-8 h-8 rounded-xl border-2 transition-all flex items-center justify-center relative z-10
-                      ${isSelected 
-                        ? 'bg-gradient-to-r from-emerald-400 to-teal-500 border-transparent shadow-lg' 
-                        : 'border-gray-300 group-hover:border-purple-400 bg-white'
-                      }
-                    `}>
-                      {isSelected && (
-                        <motion.svg
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          className="w-5 h-5 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </motion.svg>
-                      )}
-                    </div>
-                    
-                    {/* Icon */}
-                    <div className={`
-                      w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 relative z-10
-                      ${isSelected 
-                        ? 'bg-gradient-to-br from-purple-400 to-indigo-500 shadow-lg scale-110' 
-                        : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-purple-100 group-hover:to-indigo-100 group-hover:scale-105'
-                      }
-                    `}>
-                      <Icon className={`w-7 h-7 transition-all ${isSelected ? 'text-white' : 'text-gray-600 group-hover:text-purple-600'}`} />
-                      {isSelected && (
-                        <motion.div
-                          animate={{ rotate: [0, 360] }}
-                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                          className="absolute inset-0 border-2 border-white/30 rounded-2xl"
-                        ></motion.div>
-                      )}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 relative z-10">
-                      <h4 className={`font-bold text-lg mb-2 transition-all ${isSelected ? 'bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent' : 'text-gray-900 group-hover:text-purple-800'}`}>
-                        {addon.label}
-                      </h4>
-                      <p className={`text-sm leading-relaxed transition-all ${isSelected ? 'text-gray-700 font-medium' : 'text-gray-500 group-hover:text-gray-600'}`}>
-                        {addon.description}
-                      </p>
-                      {isSelected && (
-                        <motion.div 
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="mt-3 flex items-center gap-2"
-                        >
-                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs text-emerald-600 font-semibold">مُضاف للطلب 🎯</span>
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Floating sparkle for selected items */}
-                    {isSelected && (
-                      <motion.div
-                        animate={{ 
-                          y: [0, -10, 0],
-                          opacity: [0.5, 1, 0.5]
-                        }}
-                        transition={{ 
-                          duration: 2, 
-                          repeat: Infinity,
-                          ease: "easeInOut" 
-                        }}
-                        className="absolute top-4 right-4 z-10"
-                      >
-                        <Sparkles className="w-4 h-4 text-amber-400" />
-                      </motion.div>
-                    )}
-                  </motion.button>
-                )
-              })}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
       <input
         type="hidden"
         {...register('service_type')}
-      />
-      <input
-        type="hidden"
-        {...register('additional_services')}
       />
     </div>
   )

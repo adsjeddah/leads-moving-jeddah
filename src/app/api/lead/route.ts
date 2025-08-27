@@ -71,30 +71,27 @@ export async function POST(request: NextRequest) {
       
       // Service Details
       service_type: data.service_type,
-      additional_services: data.additional_services || [],
       
       // Pickup Location
       from_city: data.from_city,
       from_district: data.from_district,
-      from_floor: data.from_floor,
+      from_floor: data.from_floor || 0,
       from_elevator: data.from_elevator,
       from_place_type: data.from_place_type,
       
       // Delivery Location
       to_city: data.to_city,
       to_district: data.to_district,
-      to_floor: data.to_floor,
+      to_floor: data.to_floor || 0,
       to_elevator: data.to_elevator,
       
-      // Items and Packaging
-      items: data.items,
-      packaging_level: data.packaging_level,
+      // Items
+      items_type: data.items_type,
+      items: data.items || [],
       hoist_needed: data.hoist_needed,
       
       // Scheduling
       date_pref: data.date_pref,
-      time_slot: data.time_slot,
-      flexibility: data.flexibility,
       
       // Customer Information
       customer_name: data.customer_name,

@@ -83,7 +83,7 @@ export function StepDeliveryDetails() {
               )
             }
           </label>
-          {serviceType === 'من_وإلى_جدة' && toCity && toCity !== 'جدة' ? (
+          {toCity && toCity !== 'جدة' ? (
             <input
               type="text"
               placeholder="أدخل الحي أو المنطقة"

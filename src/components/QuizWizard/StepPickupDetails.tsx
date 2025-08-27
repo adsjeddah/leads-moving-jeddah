@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { Home, Building, Building2, Warehouse } from 'lucide-react'
+import { Home, Building, Building2, Warehouse, TreePine } from 'lucide-react'
 import { formatNumberInput } from '@/lib/arabicToEnglish'
 
 // Memoized static data to prevent re-creation
@@ -9,6 +9,7 @@ const placeTypes = [
   { value: 'فيلا', label: 'فيلا', icon: Home },
   { value: 'مكتب', label: 'مكتب', icon: Building2 },
   { value: 'مستودع', label: 'مستودع', icon: Warehouse },
+  { value: 'استراحة', label: 'استراحة', icon: TreePine },
 ]
 
 // Lazy load data only when needed

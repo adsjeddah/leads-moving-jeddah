@@ -7,8 +7,6 @@ export function StepScheduleContact() {
   const { register, watch, setValue, formState: { errors } } = useFormContext()
   
   // Minimize watches to reduce re-renders
-  const timeSlot = watch('time_slot')
-  const flexibility = watch('flexibility')
   const whatsappOptin = watch('whatsapp_optin')
 
   // Memoized date generation to prevent recalculation on every render
@@ -76,76 +74,7 @@ export function StepScheduleContact() {
         )}
       </div>
 
-      {/* Time Slot */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          <Clock className="inline-block w-4 h-4 ml-1" />
-          الفترة المفضلة *
-        </label>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setValue('time_slot', 'صباحًا', { shouldValidate: true })}
-            className={`
-              flex-1 py-3 rounded-xl border transition-all
-              ${timeSlot === 'صباحًا'
-                ? 'border-primary bg-primary text-white'
-                : 'border-gray-200 hover:border-gray-300'
-              }
-            `}
-          >
-            صباحًا (8:00 - 12:00)
-          </button>
-          <button
-            type="button"
-            onClick={() => setValue('time_slot', 'مساءً', { shouldValidate: true })}
-            className={`
-              flex-1 py-3 rounded-xl border transition-all
-              ${timeSlot === 'مساءً'
-                ? 'border-primary bg-primary text-white'
-                : 'border-gray-200 hover:border-gray-300'
-              }
-            `}
-          >
-            مساءً (12:00 - 8:00)
-          </button>
-        </div>
-      </div>
 
-      {/* Flexibility */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          مرونة الموعد *
-        </label>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setValue('flexibility', 'flexible', { shouldValidate: true })}
-            className={`
-              flex-1 py-3 rounded-xl border transition-all
-              ${flexibility === 'flexible'
-                ? 'border-primary bg-primary text-white'
-                : 'border-gray-200 hover:border-gray-300'
-              }
-            `}
-          >
-            مرن
-          </button>
-          <button
-            type="button"
-            onClick={() => setValue('flexibility', 'strict', { shouldValidate: true })}
-            className={`
-              flex-1 py-3 rounded-xl border transition-all
-              ${flexibility === 'strict'
-                ? 'border-primary bg-primary text-white'
-                : 'border-gray-200 hover:border-gray-300'
-              }
-            `}
-          >
-            غير مرن
-          </button>
-        </div>
-      </div>
 
       {/* Contact Information */}
       <div className="space-y-4">

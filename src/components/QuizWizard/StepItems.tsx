@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { 
   Plus, Minus, Package, Bed, Home, Sofa, Table, ChefHat, 
   Refrigerator, Snowflake, Shirt, Sun, Monitor, BookOpen, Box, Star
 } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 // Memoized static data to prevent re-creation
 const itemsList = [
@@ -22,12 +23,13 @@ const itemsList = [
 ]
 
 export function StepItems() {
-  const { watch, setValue, register, formState: { errors } } = useFormContext()
+  const { watch, setValue, formState: { errors } } = useFormContext()
+  const [customItem, setCustomItem] = useState('')
   
   // Minimize watches to reduce re-renders
+  const itemsType = watch('items_type')
   const watchedItems = watch('items')
   const items = useMemo(() => watchedItems || [], [watchedItems])
-  const packagingLevel = watch('packaging_level')
   const hoistNeeded = watch('hoist_needed')
 
   // Memoized handlers to prevent recreation
@@ -49,149 +51,211 @@ export function StepItems() {
     setValue('items', existingItems, { shouldValidate: true })
   }, [items, setValue])
 
-  const getItemQuantity = useCallback((itemId: string) => {
-    const itemLabel = itemsList.find(item => item.id === itemId)?.label
+  const getItemQuantity = useCallback((itemLabel: string) => {
     const item = items.find((i: any) => i.item === itemLabel)
     return item ? item.quantity : 0
   }, [items])
 
+  const addCustomItem = useCallback(() => {
+    if (customItem.trim()) {
+      updateItemQuantity('custom', customItem.trim(), 1)
+      setCustomItem('')
+    }
+  }, [customItem, updateItemQuantity])
+
+  const handleCustomItemKeyPress = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addCustomItem()
+    }
+  }, [addCustomItem])
+
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full mb-4 shadow-lg">
-          <Package className="w-8 h-8 text-white" />
-        </div>
-        <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-gray-900 via-purple-700 to-indigo-700 bg-clip-text text-transparent">
-          العناصر المطلوب نقلها
-        </h2>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          حدد الأثاث والأجهزة التي تريد نقلها مع تحديد الكمية المطلوبة لكل عنصر
-        </p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-2">ماذا تريد نقله؟</h2>
+        <p className="text-gray-600">حدد نوع العفش المراد نقله</p>
       </div>
 
-      {/* Items Counter */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {itemsList.map((item) => {
-          const quantity = getItemQuantity(item.id)
-          const Icon = item.icon
-          
-          return (
-            <div
-              key={item.id}
-              className={`p-5 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
-                quantity > 0 
-                  ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 shadow-lg ring-2 ring-purple-100' 
-                  : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-              }`}
-            >
-              <div className="text-center mb-3">
-                <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center transition-all ${
-                  quantity > 0 
-                    ? 'bg-gradient-to-br from-purple-500 to-indigo-500 text-white shadow-lg' 
-                    : 'bg-gray-100 ' + item.color
-                }`}>
-                  <Icon className="w-6 h-6" />
-                </div>
-              </div>
-              
-              <p className={`text-sm font-semibold text-center mb-4 transition-colors ${
-                quantity > 0 ? 'text-purple-700' : 'text-gray-700'
-              }`}>
-                {item.label}
-              </p>
-              
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => updateItemQuantity(item.id, item.label, -1)}
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                    quantity === 0 
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 text-white shadow-md hover:shadow-lg hover:scale-105'
-                  }`}
-                  disabled={quantity === 0}
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                
-                <div className={`w-12 h-9 rounded-lg flex items-center justify-center font-bold text-lg ${
-                  quantity > 0 
-                    ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md' 
-                    : 'bg-gray-100 text-gray-600'
-                }`}>
-                  {quantity}
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={() => updateItemQuantity(item.id, item.label, 1)}
-                  className="w-9 h-9 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white flex items-center justify-center shadow-md hover:shadow-lg transition-all hover:scale-105"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              
-              {quantity > 0 && (
-                <div className="mt-3 flex items-center justify-center gap-1">
-                  <Star className="w-3 h-3 text-yellow-500" />
-                  <span className="text-xs text-purple-600 font-semibold">مُختار</span>
-                </div>
-              )}
+      {/* Items Type Selection */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">نوع العفش المراد نقله <span className="text-red-500">*</span></h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Complete Furniture Option */}
+          <motion.div
+            className={`
+              relative p-6 rounded-xl border-2 cursor-pointer transition-all
+              ${itemsType === 'complete_furniture'
+                ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+              }
+            `}
+            onClick={() => {
+              setValue('items_type', 'complete_furniture', { shouldValidate: true })
+              setValue('items', [], { shouldValidate: true })
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="text-center">
+              <Home className={`w-12 h-12 mx-auto mb-3 ${itemsType === 'complete_furniture' ? 'text-primary' : 'text-gray-600'}`} />
+              <h4 className="text-xl font-bold mb-2">عفش كامل</h4>
+              <p className="text-gray-600 text-sm">نقل جميع محتويات المنزل/المكتب</p>
             </div>
-          )
-        })}
-      </div>
+            {itemsType === 'complete_furniture' && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold"
+              >
+                ✓
+              </motion.div>
+            )}
+          </motion.div>
 
-      {/* Other Items */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          عناصر أخرى (اختياري)
-        </label>
-        <textarea
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-          rows={3}
-          placeholder="أضف أي عناصر أخرى تريد نقلها..."
-        />
-      </div>
-
-      {errors.items && (
-        <p className="text-red-500 text-sm">{errors.items.message as string}</p>
-      )}
-
-      {/* Packaging Level */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          مستوى التغليف *
-        </label>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setValue('packaging_level', 'basic', { shouldValidate: true })}
+          {/* Specific Items Option */}
+          <motion.div
             className={`
-              flex-1 py-3 px-4 rounded-xl border transition-all
-              ${packagingLevel === 'basic'
-                ? 'border-primary bg-primary text-white'
-                : 'border-gray-200 hover:border-gray-300'
+              relative p-6 rounded-xl border-2 cursor-pointer transition-all
+              ${itemsType === 'specific_items'
+                ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
               }
             `}
+            onClick={() => setValue('items_type', 'specific_items', { shouldValidate: true })}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            أساسي
-          </button>
-          <button
-            type="button"
-            onClick={() => setValue('packaging_level', 'full', { shouldValidate: true })}
-            className={`
-              flex-1 py-3 px-4 rounded-xl border transition-all
-              ${packagingLevel === 'full'
-                ? 'border-primary bg-primary text-white'
-                : 'border-gray-200 hover:border-gray-300'
-              }
-            `}
-          >
-            كامل (حماية إضافية)
-          </button>
+            <div className="text-center">
+              <Package className={`w-12 h-12 mx-auto mb-3 ${itemsType === 'specific_items' ? 'text-primary' : 'text-gray-600'}`} />
+              <h4 className="text-xl font-bold mb-2">عناصر محددة</h4>
+              <p className="text-gray-600 text-sm">اختيار قطع معينة فقط</p>
+            </div>
+            {itemsType === 'specific_items' && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold"
+              >
+                ✓
+              </motion.div>
+            )}
+          </motion.div>
         </div>
+
+        {errors.items_type && (
+          <p className="text-red-500 text-sm mt-1">{errors.items_type.message as string}</p>
+        )}
       </div>
+
+      {/* Specific Items Selection - Only show if specific_items is selected */}
+      {itemsType === 'specific_items' && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">اختر العناصر المحددة</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {itemsList.map((item) => {
+              const Icon = item.icon
+              const quantity = getItemQuantity(item.label)
+              
+              return (
+                <motion.div
+                  key={item.id}
+                  className={`
+                    relative p-4 rounded-xl border transition-all
+                    ${quantity > 0 
+                      ? 'border-primary bg-primary/5 ring-2 ring-primary/20' 
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    }
+                  `}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {/* Main item display */}
+                  <div className="text-center mb-3">
+                    <Icon className={`w-8 h-8 mx-auto mb-2 ${item.color}`} />
+                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                  </div>
+                  
+                  {/* Quantity controls */}
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateItemQuantity(item.id, item.label, -1)}
+                      disabled={quantity === 0}
+                      className={`
+                        w-8 h-8 rounded-full transition-all
+                        ${quantity > 0
+                          ? 'bg-red-100 hover:bg-red-200 text-red-600'
+                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }
+                      `}
+                    >
+                      <Minus className="w-4 h-4 mx-auto" />
+                    </button>
+                    
+                    <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold">
+                      {quantity}
+                    </span>
+                    
+                    <button
+                      type="button"
+                      onClick={() => updateItemQuantity(item.id, item.label, 1)}
+                      className="w-8 h-8 bg-primary hover:bg-primary-dark text-white rounded-full transition-all"
+                    >
+                      <Plus className="w-4 h-4 mx-auto" />
+                    </button>
+                  </div>
+                  
+                  {/* Selection indicator */}
+                  {quantity > 0 && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold"
+                    >
+                      ✓
+                    </motion.div>
+                  )}
+                </motion.div>
+              )
+            })}
+          </div>
+          
+          {/* Custom item input */}
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
+            <h4 className="font-medium text-gray-700 mb-2">عنصر آخر؟</h4>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="أدخل اسم العنصر..."
+                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                value={customItem}
+                onChange={(e) => setCustomItem(e.target.value)}
+                onKeyPress={handleCustomItemKeyPress}
+              />
+              <button
+                type="button"
+                onClick={addCustomItem}
+                disabled={!customItem.trim()}
+                className={`
+                  px-4 py-2 rounded-lg transition-all
+                  ${customItem.trim()
+                    ? 'bg-primary hover:bg-primary-dark text-white'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }
+                `}
+              >
+                إضافة
+              </button>
+            </div>
+          </div>
+          
+          {errors.items && (
+            <p className="text-red-500 text-sm mt-1">{errors.items.message as string}</p>
+          )}
+        </div>
+      )}
 
       {/* Hoist Needed */}
       <div>

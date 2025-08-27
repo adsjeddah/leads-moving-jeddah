@@ -3,12 +3,11 @@ import { z } from 'zod'
 export const leadFormSchema = z.object({
   // Service details
   service_type: z.enum(['داخل_جدة', 'من_وإلى_جدة']),
-  additional_services: z.array(z.string()).optional(),
   
   // From location
   from_city: z.string().min(1, 'يرجى اختيار مدينة الاستلام').default('جدة'),
   from_district: z.string().min(1, 'يرجى اختيار حي الاستلام'),
-  from_place_type: z.enum(['شقة', 'فيلا', 'مكتب', 'مستودع'], {
+  from_place_type: z.enum(['شقة', 'فيلا', 'مكتب', 'مستودع', 'استراحة'], {
     errorMap: () => ({ message: 'يرجى اختيار نوع المكان' })
   }),
   from_floor: z.union([
@@ -31,17 +30,17 @@ export const leadFormSchema = z.object({
   }),
   
   // Items
+  items_type: z.enum(['complete_furniture', 'specific_items'], {
+    errorMap: () => ({ message: 'يرجى اختيار نوع العفش المراد نقله' })
+  }),
   items: z.array(z.object({
     item: z.string(),
     quantity: z.number().min(0)
-  })).min(1, 'يرجى إضافة عنصر واحد على الأقل'),
-  packaging_level: z.enum(['basic', 'full']),
+  })).optional(),
   hoist_needed: z.enum(['yes', 'no', 'unknown']),
   
   // Schedule
   date_pref: z.string(),
-  time_slot: z.enum(['صباحًا', 'مساءً']),
-  flexibility: z.enum(['flexible', 'strict']),
   
   // Customer
   customer_name: z.string().min(2, 'يرجى إدخال الاسم (مطلوب)').max(50, 'الاسم طويل جداً'),

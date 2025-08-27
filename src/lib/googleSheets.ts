@@ -25,44 +25,41 @@ const getGoogleSheetsService = async () => {
   return google.sheets({ version: 'v4', auth })
 }
 
-// Headers for the Google Sheet - Arabic Names (Enhanced for City/District Logic)
+// Headers for the Google Sheet - Arabic Names (Updated Structure)
 const SHEET_HEADERS = [
   'وقت الطلب',           // A - timestamp
   'رقم الطلب',          // B - lead_id  
   'حالة الطلب',         // C - status
   'نوع الخدمة',         // D - service_type (داخل_جدة أو من_وإلى_جدة)
-  'خدمات إضافية',       // E - additional_services
-  'مدينة الاستلام',     // F - from_city (جدة أو مدن أخرى)
-  'حي/منطقة الاستلام',   // G - from_district (حي جدة أو منطقة في مدينة أخرى)
-  'نوع المكان (استلام)', // H - from_place_type
-  'الطابق (استلام)',     // I - from_floor
-  'مصعد متاح (استلام)',  // J - from_elevator
-  'مدينة التسليم',      // K - to_city (جدة أو مدن أخرى)
-  'حي/منطقة التسليم',    // L - to_district (حي جدة أو منطقة في مدينة أخرى)
-  'الطابق (تسليم)',      // M - to_floor
-  'مصعد متاح (تسليم)',   // N - to_elevator
-  'قائمة العناصر والكميات', // O - items
-  'مستوى التغليف',       // P - packaging_level
-  'رافعة مطلوبة',        // Q - hoist_needed
-  'التاريخ المفضل',      // R - date_pref
-  'الفترة الزمنية',      // S - time_slot
-  'مرونة الموعد',        // T - flexibility
-  'اسم العميل',          // U - customer_name
-  'رقم الهاتف',          // V - customer_phone
-  'موافقة واتساب',       // W - whatsapp_optin
-  'ملاحظات العميل',      // X - notes
-  'مصدر الزيارة',        // Y - utm_source
-  'وسيط التسويق',        // Z - utm_medium
-  'الحملة التسويقية',     // AA - utm_campaign
-  'المصطلح التسويقي',     // BB - utm_term
-  'محتوى الحملة',        // CC - utm_content
-  'معرف جوجل للنقرة',    // DD - gclid
-  'نوع الجهاز',          // EE - device
-  'صفحة الدخول',         // FF - page_path
-  'الموقع المرجعي',      // GG - referrer
-  'عنوان الـ IP',        // HH - ip
-  'العملة',             // II - currency
-  'زمن الاستجابة (دقيقة)' // JJ - sla_minutes
+  'مدينة الاستلام',     // E - from_city (جدة أو مدن أخرى)
+  'حي/منطقة الاستلام',   // F - from_district (حي جدة أو منطقة في مدينة أخرى)
+  'نوع المكان (استلام)', // G - from_place_type
+  'الطابق (استلام)',     // H - from_floor
+  'مصعد متاح (استلام)',  // I - from_elevator
+  'مدينة التسليم',      // J - to_city (جدة أو مدن أخرى)
+  'حي/منطقة التسليم',    // K - to_district (حي جدة أو منطقة في مدينة أخرى)
+  'الطابق (تسليم)',      // L - to_floor
+  'مصعد متاح (تسليم)',   // M - to_elevator
+  'نوع العفش',          // N - items_type (عفش كامل أو عناصر محددة)
+  'قائمة العناصر والكميات', // O - items (إذا كان عناصر محددة)
+  'رافعة مطلوبة',        // P - hoist_needed
+  'التاريخ المفضل',      // Q - date_pref
+  'اسم العميل',          // R - customer_name
+  'رقم الهاتف',          // S - customer_phone
+  'موافقة واتساب',       // T - whatsapp_optin
+  'ملاحظات العميل',      // U - notes
+  'مصدر الزيارة',        // V - utm_source
+  'وسيط التسويق',        // W - utm_medium
+  'الحملة التسويقية',     // X - utm_campaign
+  'المصطلح التسويقي',     // Y - utm_term
+  'محتوى الحملة',        // Z - utm_content
+  'معرف جوجل للنقرة',    // AA - gclid
+  'نوع الجهاز',          // BB - device
+  'صفحة الدخول',         // CC - page_path
+  'الموقع المرجعي',      // DD - referrer
+  'عنوان الـ IP',        // EE - ip
+  'العملة',             // FF - currency
+  'زمن الاستجابة (دقيقة)' // GG - sla_minutes
 ]
 
 // Check if headers exist, if not, add them
@@ -140,26 +137,21 @@ export const addLeadToSheet = async (leadData: any) => {
       leadData.lead_id,
       leadData.status,
       leadData.service_type,
-      Array.isArray(leadData.additional_services) 
-        ? leadData.additional_services.join(', ') 
-        : (leadData.additional_services || ''),
       leadData.from_city,
       leadData.from_district,
       leadData.from_place_type,
-      leadData.from_floor.toString(),
+      leadData.from_floor ? leadData.from_floor.toString() : '0',
       leadData.from_elevator,
       leadData.to_city,
       leadData.to_district,
-      leadData.to_floor.toString(),
+      leadData.to_floor ? leadData.to_floor.toString() : '0',
       leadData.to_elevator,
-      Array.isArray(leadData.items) 
+      leadData.items_type === 'complete_furniture' ? 'عفش كامل' : 'عناصر محددة',
+      leadData.items_type === 'specific_items' && Array.isArray(leadData.items) 
         ? leadData.items.map((item: any) => `${item.item}: ${item.quantity}`).join(', ')
-        : (leadData.items || ''),
-      leadData.packaging_level,
+        : (leadData.items_type === 'complete_furniture' ? 'جميع محتويات المنزل/المكتب' : ''),
       leadData.hoist_needed,
       leadData.date_pref,
-      leadData.time_slot,
-      leadData.flexibility,
       leadData.customer_name,
       leadData.customer_phone,
       leadData.whatsapp_optin ? 'نعم' : 'لا',
@@ -181,7 +173,7 @@ export const addLeadToSheet = async (leadData: any) => {
     // Add the new row
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:AI`, // Assuming we have columns up to AI
+      range: `${SHEET_NAME}!A:GG`, // Updated range for new structure
       valueInputOption: 'RAW',
       requestBody: {
         values: [rowData]
