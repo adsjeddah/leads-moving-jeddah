@@ -72,13 +72,13 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
   const motivation = useMemo(() => getMotivationMessage(progress, currentStep, totalSteps), [progress, currentStep, totalSteps])
 
   return (
-    <div className="relative w-full space-y-4">
-      {/* رسالة تحفيزية ديناميكية */}
+    <div className="relative w-full space-y-4 progress-text">
+      {/* رسالة تحفيزية مع نسبة التقدم */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center justify-between"
+        className="flex items-center justify-between bg-white rounded-xl p-4 shadow-sm border border-gray-100"
       >
         <div className="flex items-center gap-3">
           <motion.div
@@ -93,7 +93,8 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
               key={motivation.message}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="font-bold text-gray-900 text-sm sm:text-base no-underline"
+              className="font-bold text-gray-900 text-sm sm:text-base"
+              style={{ textDecoration: 'none !important' }}
             >
               {motivation.message}
             </motion.h4>
@@ -102,39 +103,25 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-xs sm:text-sm text-gray-600 no-underline"
+              className="text-xs sm:text-sm text-gray-600"
+              style={{ textDecoration: 'none !important' }}
             >
               {motivation.subMessage}
             </motion.p>
           </div>
         </div>
         
-        {/* نسبة التقدم مع تأثيرات جميلة */}
-        <div className="text-center">
-          <motion.div
-            key={progress}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="relative"
-          >
-            <span className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${motivation.color} bg-clip-text text-transparent`}>
-              {Math.round(progress)}%
-            </span>
-            <motion.div
-              className="absolute -inset-1 rounded-lg opacity-30 blur-sm bg-gradient-to-r from-purple-400 to-pink-400"
-              animate={{ 
-                opacity: [0.3, 0.5, 0.3],
-                scale: [1, 1.05, 1]
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          </motion.div>
-          <p className="text-xs text-gray-500 mt-1 no-underline">مكتمل</p>
-        </div>
+        {/* نسبة التقدم */}
+        <motion.div
+          key={progress}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center"
+        >
+          <span className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${motivation.color} bg-clip-text text-transparent`}>
+            {Math.round(progress)}%
+          </span>
+        </motion.div>
       </motion.div>
 
       {/* شريط التقدم الرئيسي */}
@@ -181,11 +168,11 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
         </div>
         
         {/* تسميات الخطوات */}
-        <div className="flex justify-between items-center mt-3 text-xs sm:text-sm text-gray-600 no-underline">
-          <span className="font-medium no-underline">
+        <div className="flex justify-between items-center mt-3 text-xs sm:text-sm text-gray-600">
+          <span className="font-medium" style={{ textDecoration: 'none !important' }}>
             الخطوة {currentStep + 1} من {totalSteps}
           </span>
-          <span className="font-medium no-underline">
+          <span className="font-medium" style={{ textDecoration: 'none !important' }}>
             {totalSteps - currentStep - 1} خطوات متبقية
           </span>
         </div>
@@ -275,7 +262,7 @@ export function ProgressBar({ currentStep, totalSteps, completedSteps = [] }: Pr
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-full border border-purple-100">
           <Sparkles className="w-4 h-4 text-purple-500" />
-          <span className="text-sm font-medium text-purple-700 no-underline">
+          <span className="text-sm font-medium text-purple-700" style={{ textDecoration: 'none !important' }}>
             {progress < 100 ? "تسير بخطى رائعة!" : "تهانينا على الإنجاز! 🎉"}
           </span>
         </div>

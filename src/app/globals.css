@@ -378,15 +378,30 @@
   }
   
   /* Required field border enhancement */
-  .required-field:focus {
-    border-color: #ef4444 !important;
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
-  }
-  
-  .required-field.error {
-    border-color: #ef4444 !important;
-    background-color: rgba(239, 68, 68, 0.05);
-  }
+.required-field:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+}
+
+.required-field.error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* Progress bar text decoration fix */
+.progress-text,
+.progress-text h1,
+.progress-text h2,
+.progress-text h3,
+.progress-text h4,
+.progress-text h5,
+.progress-text h6,
+.progress-text p,
+.progress-text span,
+.progress-text div {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
 }
 
 /* Custom scrollbar */
