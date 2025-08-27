@@ -1,0 +1,506 @@
+"use client"
+
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { leadFormSchema, type LeadFormData } from '@/lib/schemas'
+import { getUTMParams, getDeviceType, getReferrer, getPagePath } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
+import { Sparkles, Shield, Clock, Award, ChevronRight, ChevronLeft, Send, Phone, MessageCircle } from 'lucide-react'
+
+// Import step components
+import { StepService } from './StepService'
+import { StepPickupDetails } from './StepPickupDetails'
+import { StepDeliveryDetails } from './StepDeliveryDetails'
+import { StepItems } from './StepItems'
+import { StepScheduleContact } from './StepScheduleContact'
+import { ProgressBar } from './ProgressBar'
+
+const steps = [
+  { 
+    title: 'نوع الخدمة', 
+    component: StepService,
+    icon: '🚚',
+    subtitle: 'اختر الخدمة المناسبة لاحتياجك'
+  },
+  { 
+    title: 'من أين؟', 
+    component: StepPickupDetails,
+    icon: '📍',
+    subtitle: 'حدد موقع الاستلام بدقة'
+  },
+  { 
+    title: 'إلى أين؟', 
+    component: StepDeliveryDetails,
+    icon: '🏠',
+    subtitle: 'حدد وجهة التسليم'
+  },
+  { 
+    title: 'ماذا تنقل؟', 
+    component: StepItems,
+    icon: '📦',
+    subtitle: 'أخبرنا عن العناصر المراد نقلها'
+  },
+  { 
+    title: 'متى؟', 
+    component: StepScheduleContact,
+    icon: '📅',
+    subtitle: 'حدد الموعد المناسب واترك بياناتك'
+  },
+]
+
+// Smart suggestions based on user selections
+const getSmartSuggestions = (formData: Partial<LeadFormData>) => {
+  const suggestions = []
+  
+  if (formData.from_floor && formData.from_floor > 2 && !formData.from_elevator) {
+    suggestions.push({
+      type: 'warning',
+      message: 'قد تحتاج لرافعة للطوابق العليا بدون مصعد'
+    })
+  }
+  
+  if (formData.items && formData.items.length > 5) {
+    suggestions.push({
+      type: 'info',
+      message: 'ننصح بالتغليف الاحترافي للعناصر الكثيرة'
+    })
+  }
+  
+  return suggestions
+}
+
+export function QuizWizard() {
+  const [currentStep, setCurrentStep] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [completedSteps, setCompletedSteps] = useState<number[]>([])
+  const [estimatedPrice, setEstimatedPrice] = useState<string | null>(null)
+  const { toast } = useToast()
+  const router = useRouter()
+
+  const methods = useForm<LeadFormData>({
+    resolver: zodResolver(leadFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      from_city: 'جدة',
+      items: [],
+      whatsapp_optin: false,
+      packaging_level: 'basic',
+      flexibility: 'flexible',
+      ...getUTMParams(),
+      device: getDeviceType(),
+      page_path: getPagePath(),
+      referrer: getReferrer(),
+    }
+  })
+
+  const formData = methods.watch()
+  const suggestions = getSmartSuggestions(formData)
+
+  // Calculate estimated price based on selections
+  useEffect(() => {
+    if (formData.service_type) {
+      // Base price based on service type - تحديث القيم الصحيحة
+      const basePrice = formData.service_type === 'داخل_جدة' ? 800 : 1200
+      
+      // Calculate distance multiplier if both districts are selected
+      const distanceMultiplier = (formData.from_district && formData.to_district && formData.from_district !== formData.to_district) ? 1.3 : 1
+      
+      // Calculate floor multiplier
+      const floorMultiplier = formData.from_floor && formData.from_floor > 3 ? 1.2 : 1
+      
+      const estimated = Math.round(basePrice * distanceMultiplier * floorMultiplier)
+      setEstimatedPrice(`${estimated} - ${estimated + 300} ريال`)
+    }
+  }, [formData.service_type, formData.from_district, formData.to_district, formData.from_floor])
+
+  const nextStep = async () => {
+    const fields = getFieldsForStep(currentStep)
+    const isValid = await methods.trigger(fields as any)
+    
+    if (isValid) {
+      if (!completedSteps.includes(currentStep)) {
+        setCompletedSteps([...completedSteps, currentStep])
+      }
+      
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(currentStep + 1)
+        
+        // Push analytics event for step completion
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'quiz_step_completed', {
+            step: currentStep + 1,
+            step_name: steps[currentStep].title
+          })
+        }
+      }
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const goToStep = (stepIndex: number) => {
+    if (stepIndex <= Math.max(...completedSteps, 0) + 1) {
+      setCurrentStep(stepIndex)
+    }
+  }
+
+  const onSubmit = async (data: LeadFormData) => {
+    setIsSubmitting(true)
+    
+    try {
+      const response = await fetch('/api/lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Push GA4 event
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'lead_submit', {
+            event_category: 'conversion',
+            event_label: data.service_type,
+            service_type: data.service_type,
+            from_district: data.from_district,
+            to_district: data.to_district,
+            estimated_value: estimatedPrice
+          })
+        }
+
+        // Push GTM event
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'lead_submit',
+            service_type: data.service_type,
+            from_district: data.from_district,
+            to_district: data.to_district,
+            estimated_value: estimatedPrice
+          })
+        }
+
+        // Redirect to thank you page
+        router.push(`/thanks?name=${encodeURIComponent(data.customer_name)}`)
+      } else {
+        toast({
+          title: 'خطأ',
+          description: result.message || 'تعذّر الإرسال حاليًا. جرّب مرة أخرى خلال لحظات.',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      console.error('Submission error:', error)
+      toast({
+        title: 'خطأ',
+        description: 'حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const getFieldsForStep = (step: number) => {
+    switch (step) {
+      case 0:
+        return ['service_type']
+      case 1:
+        return ['from_city', 'from_district', 'from_place_type', 'from_floor', 'from_elevator']
+      case 2:
+        return ['to_city', 'to_district', 'to_floor', 'to_elevator']
+      case 3:
+        return ['items', 'packaging_level', 'hoist_needed']
+      case 4:
+        return ['date_pref', 'time_slot', 'flexibility', 'customer_name', 'customer_phone']
+      default:
+        return []
+    }
+  }
+
+  const CurrentStepComponent = steps[currentStep].component
+  const completionPercentage = ((completedSteps.length + 1) / steps.length) * 100
+
+  return (
+    <section id="quiz-section" className="relative py-12 sm:py-20 bg-gradient-to-br from-purple-50 via-indigo-50/50 to-blue-50 overflow-hidden" dir="rtl">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div className="absolute top-10 right-10 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container max-w-5xl relative z-10 px-4 sm:px-6">
+        {/* Header with trust badges */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8 sm:mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full mb-4 sm:mb-6">
+            <Sparkles className="w-4 h-4 text-purple-600" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700">خلصها في دقيقتين بس</span>
+          </div>
+          
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+            <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
+              خلي الشركات تجيك بدال ما تدور عليها
+            </span>
+          </h2>
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+            بس جاوب على كم سؤال بسيط وحنا نجيب لك أحسن العروض
+          </p>
+
+          {/* Trust indicators - Mobile optimized */}
+          <div className="flex justify-center gap-3 sm:gap-6 mt-4 sm:mt-6 flex-wrap">
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+              <span className="text-gray-600">معلوماتك آمنة</span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+              <span className="text-gray-600">رد خلال 5 دقائق</span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+              <span className="text-gray-600">شركات معتمدة</span>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white/90 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-purple-100/50"
+        >
+          {/* Enhanced Progress Bar */}
+          <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 p-4 sm:p-6 border-b border-purple-100/30">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div>
+                <h3 className="font-bold text-gray-900 text-base sm:text-lg">{steps[currentStep].title}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{steps[currentStep].subtitle}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  {Math.round(completionPercentage)}%
+                </span>
+                <p className="text-xs text-gray-600">مكتمل</p>
+              </div>
+            </div>
+            
+            <div className="relative h-2 sm:h-3 bg-gray-200/50 rounded-full overflow-hidden">
+              <motion.div
+                className="absolute inset-y-0 right-0 bg-gradient-to-l from-purple-500 via-indigo-500 to-blue-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${completionPercentage}%` }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              />
+              <div className="absolute inset-0 bg-white/20 animate-pulse" />
+            </div>
+
+            {/* Step indicators - Mobile optimized */}
+            <div className="flex justify-between mt-4 sm:mt-6">
+              {steps.map((step, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToStep(index)}
+                  disabled={index > Math.max(...completedSteps, 0) + 1}
+                  className={`
+                    flex flex-col items-center gap-0.5 sm:gap-1 cursor-pointer transition-all duration-300 flex-1
+                    ${index === currentStep ? 'scale-110' : ''}
+                    ${index > Math.max(...completedSteps, 0) + 1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
+                  `}
+                >
+                  <div className={`
+                    w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-base sm:text-xl transition-all duration-300
+                    ${index === currentStep 
+                      ? 'bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 shadow-lg transform' 
+                      : index <= Math.max(...completedSteps, 0)
+                      ? 'bg-green-100'
+                      : 'bg-gray-100'
+                    }
+                  `}>
+                    {index <= Math.max(...completedSteps, 0) && index !== currentStep ? (
+                      '✓'
+                    ) : (
+                      step.icon
+                    )}
+                  </div>
+                  <span className={`
+                    text-[10px] sm:text-xs font-medium hidden sm:block
+                    ${index === currentStep ? 'text-gray-900' : 'text-gray-500'}
+                  `}>
+                    {step.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Smart Suggestions */}
+          {suggestions.length > 0 && (
+            <div className="px-4 sm:px-8 pt-4 sm:pt-6">
+              <AnimatePresence>
+                {suggestions.map((suggestion, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={`
+                      p-3 sm:p-4 rounded-xl mb-2 sm:mb-3 flex items-start gap-2 sm:gap-3
+                      ${suggestion.type === 'warning' ? 'bg-amber-50 border border-amber-200' : 'bg-blue-50 border border-blue-200'}
+                    `}
+                  >
+                    <span className="text-base sm:text-lg">💡</span>
+                    <p className="text-xs sm:text-sm text-gray-700">{suggestion.message}</p>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* Estimated Price Display - Hidden as requested */}
+          {/* {estimatedPrice && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="mx-4 sm:mx-8 mt-4 sm:mt-6 mb-4 sm:mb-6 p-4 sm:p-6 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl sm:rounded-2xl border-2 border-emerald-300 shadow-lg"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1">💰 السعر التقديري للخدمة</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-green-700">{estimatedPrice}</p>
+                  <p className="text-xs text-gray-500 mt-1">* السعر النهائي يحدد بعد المعاينة</p>
+                </div>
+                <div className="text-green-600">
+                  <svg className="w-12 h-12 sm:w-16 sm:h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+          )} */}
+
+          {/* Form - Mobile optimized */}
+          <FormProvider {...methods}>
+            <form onSubmit={methods.handleSubmit(onSubmit)} className="p-4 sm:p-8 md:p-12">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentStep}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  dir="rtl"
+                >
+                  <CurrentStepComponent />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation Buttons - Mobile optimized */}
+              <div className="mt-8 sm:mt-12 flex justify-between items-center gap-3">
+                {currentStep > 0 && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={prevStep}
+                    className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 text-gray-600 hover:text-gray-900 font-medium transition-all duration-300 hover:bg-gray-50 rounded-xl text-sm sm:text-base"
+                  >
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    رجوع
+                  </motion.button>
+                )}
+
+                {currentStep < steps.length - 1 ? (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={nextStep}
+                    className="mr-auto flex items-center gap-1 sm:gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-medium rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
+                  >
+                    التالي
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="mr-auto flex items-center gap-1 sm:gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
+                        جاري الإرسال...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                        أرسل طلبي الحين
+                      </>
+                    )}
+                  </motion.button>
+                )}
+              </div>
+
+              {/* Alternative Contact Options - Mobile optimized */}
+              {currentStep === steps.length - 1 && (
+                <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-200">
+                  <p className="text-center text-gray-600 mb-3 sm:mb-4 text-sm">أو تواصل معنا مباشرة</p>
+                  <div className="flex justify-center gap-3 sm:gap-4">
+                    <button
+                      type="button"
+                      onClick={() => window.open(`tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER || '966500000000'}`, '_self')}
+                      className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-sm"
+                    >
+                      <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                      <span>اتصل الآن</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+                        window.open(`https://wa.me/${whatsappNumber}`, '_blank')
+                      }}
+                      className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-green-100 hover:bg-green-200 rounded-xl transition-colors text-sm"
+                    >
+                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                      <span>واتساب</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+          </FormProvider>
+        </motion.div>
+
+        {/* Bottom trust message - Mobile optimized */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center mt-6 sm:mt-8"
+        >
+          <p className="text-xs sm:text-sm text-gray-500">
+            🔒 معلوماتك بأمان وما نشاركها مع أي أحد
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
