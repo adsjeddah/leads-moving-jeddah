@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,7 +8,7 @@ import { leadFormSchema, type LeadFormData } from '@/lib/schemas'
 import { getUTMParams, getDeviceType, getReferrer, getPagePath } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
-import { Sparkles, Shield, Clock, Award, ChevronRight, ChevronLeft, Send, Phone, MessageCircle } from 'lucide-react'
+import { Sparkles, Shield, Clock, Award, ChevronRight, ChevronLeft, Send, Phone, MessageCircle, Zap, Star, Flame, Rocket } from 'lucide-react'
 
 // Import step components
 import { StepService } from './StepService'
@@ -77,8 +77,15 @@ export function QuizWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
   const [estimatedPrice, setEstimatedPrice] = useState<string | null>(null)
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+  
+  // Refs for smooth scrolling
+  const quizRef = useRef<HTMLDivElement>(null)
+  const stepContentRef = useRef<HTMLDivElement>(null)
+  const errorFieldRef = useRef<HTMLDivElement>(null)
 
   const methods = useForm<LeadFormData>({
     resolver: zodResolver(leadFormSchema),
@@ -98,6 +105,57 @@ export function QuizWizard() {
 
   const formData = methods.watch()
   const suggestions = getSmartSuggestions(formData)
+
+  // Detect mobile and setup responsive behavior
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Smooth scroll to top of quiz
+  const scrollToQuizTop = useCallback(() => {
+    if (quizRef.current) {
+      quizRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      })
+    }
+  }, [])
+
+  // Smooth scroll to error field
+  const scrollToErrorField = useCallback((fieldName: string) => {
+    setTimeout(() => {
+      const errorElement = document.querySelector(`[data-field="${fieldName}"]`) || 
+                          document.querySelector('.text-red-500') ||
+                          document.querySelector('[aria-invalid="true"]')
+      
+      if (errorElement) {
+        errorElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        })
+        
+        // Add highlight effect
+        errorElement.classList.add('highlight-error')
+        setTimeout(() => {
+          errorElement.classList.remove('highlight-error')
+        }, 2000)
+      }
+    }, 100)
+  }, [])
+
+  // Celebration effect
+  const triggerCelebration = useCallback(() => {
+    setShowCelebration(true)
+    setTimeout(() => setShowCelebration(false), 2000)
+  }, [])
 
   // Calculate estimated price based on selections
   useEffect(() => {
@@ -121,12 +179,20 @@ export function QuizWizard() {
     const isValid = await methods.trigger(fields as any)
     
     if (isValid) {
+      // Trigger celebration effect
+      triggerCelebration()
+      
       if (!completedSteps.includes(currentStep)) {
         setCompletedSteps([...completedSteps, currentStep])
       }
       
       if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1)
+        // Smooth scroll to top before changing step
+        scrollToQuizTop()
+        
+        setTimeout(() => {
+          setCurrentStep(currentStep + 1)
+        }, 300) // Small delay for smooth scroll
         
         // Push analytics event for step completion
         if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -136,18 +202,31 @@ export function QuizWizard() {
           })
         }
       }
+    } else {
+      // Scroll to first error field
+      const errors = methods.formState.errors
+      const errorFields = Object.keys(errors)
+      if (errorFields.length > 0) {
+        scrollToErrorField(errorFields[0])
+      }
     }
   }
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      scrollToQuizTop()
+      setTimeout(() => {
+        setCurrentStep(currentStep - 1)
+      }, 300)
     }
   }
 
   const goToStep = (stepIndex: number) => {
     if (stepIndex <= Math.max(...completedSteps, 0) + 1) {
-      setCurrentStep(stepIndex)
+      scrollToQuizTop()
+      setTimeout(() => {
+        setCurrentStep(stepIndex)
+      }, 300)
     }
   }
 
@@ -231,15 +310,116 @@ export function QuizWizard() {
   const completionPercentage = ((completedSteps.length + 1) / steps.length) * 100
 
   return (
-    <section id="quiz-section" className="relative py-12 sm:py-20 bg-gradient-to-br from-purple-50 via-indigo-50/50 to-blue-50 overflow-hidden" dir="rtl">
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <div className="absolute top-10 right-10 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full blur-3xl"></div>
+    <section 
+      ref={quizRef}
+      id="quiz-section" 
+      className="relative py-12 sm:py-20 bg-gradient-to-br from-purple-50 via-indigo-50/50 to-blue-50 overflow-hidden scroll-smooth" 
+      dir="rtl"
+    >
+      {/* Celebration Animation Overlay */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 pointer-events-none"
+          >
+            {/* Confetti and sparkles */}
+            {[...Array(isMobile ? 20 : 40)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ 
+                  opacity: 0,
+                  scale: 0,
+                  x: Math.random() * window.innerWidth,
+                  y: Math.random() * window.innerHeight,
+                  rotate: 0
+                }}
+                animate={{ 
+                  opacity: [0, 1, 0],
+                  scale: [0, 1.5, 0],
+                  y: window.innerHeight + 100,
+                  rotate: 360 * 3
+                }}
+                transition={{
+                  duration: 2,
+                  delay: Math.random() * 0.5,
+                  ease: "easeOut"
+                }}
+                className={`absolute w-3 h-3 ${
+                  i % 4 === 0 ? 'bg-yellow-400' :
+                  i % 4 === 1 ? 'bg-pink-400' :
+                  i % 4 === 2 ? 'bg-blue-400' : 'bg-green-400'
+                } rounded-full`}
+              />
+            ))}
+            
+            {/* Mobile-specific celebration effects */}
+            {isMobile && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 0] }}
+                transition={{ duration: 1.5 }}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              >
+                <div className="text-6xl">🎉</div>
+              </motion.div>
+            )}
+
+            {/* Success ripple effect */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0.8 }}
+              animate={{ scale: 4, opacity: 0 }}
+              transition={{ duration: 1.5 }}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-r from-green-400 to-blue-500"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Enhanced Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.05]">
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.1, 1],
+            rotate: [0, 180, 360] 
+          }}
+          transition={{ 
+            duration: 20, 
+            repeat: Infinity,
+            ease: "linear" 
+          }}
+          className="absolute top-10 right-10 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-3xl"
+        />
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [360, 180, 0] 
+          }}
+          transition={{ 
+            duration: 25, 
+            repeat: Infinity,
+            ease: "linear" 
+          }}
+          className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full blur-3xl"
+        />
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.15, 1],
+            x: [-20, 20, -20],
+            y: [-10, 10, -10]
+          }}
+          transition={{ 
+            duration: 15, 
+            repeat: Infinity,
+            ease: "easeInOut" 
+          }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full blur-3xl"
+        />
       </div>
 
-      <div className="container max-w-5xl relative z-10 px-4 sm:px-6">
+      <div className={`container max-w-5xl relative z-10 px-4 sm:px-6 ${isMobile ? 'quiz-mobile-enhanced quiz-scroll-enhanced' : ''}`}>
         {/* Header with trust badges */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -298,15 +478,11 @@ export function QuizWizard() {
               </div>
             </div>
             
-            <div className="relative h-2 sm:h-3 bg-gray-200/50 rounded-full overflow-hidden">
-              <motion.div
-                className="absolute inset-y-0 right-0 bg-gradient-to-l from-purple-500 via-indigo-500 to-blue-500 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${completionPercentage}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              />
-              <div className="absolute inset-0 bg-white/20 animate-pulse" />
-            </div>
+            <ProgressBar 
+              currentStep={currentStep} 
+              totalSteps={steps.length}
+              completedSteps={completedSteps}
+            />
 
             {/* Step indicators - Mobile optimized */}
             <div className="flex justify-between mt-4 sm:mt-6">
@@ -398,14 +574,58 @@ export function QuizWizard() {
             <form onSubmit={methods.handleSubmit(onSubmit)} className="p-4 sm:p-8 md:p-12">
               <AnimatePresence mode="wait">
                 <motion.div
+                  ref={stepContentRef}
                   key={currentStep}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  initial={{ 
+                    opacity: 0, 
+                    x: isMobile ? 100 : 50,
+                    scale: 0.95
+                  }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: 0,
+                    scale: 1
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    x: isMobile ? -100 : -50,
+                    scale: 0.95
+                  }}
+                  transition={{ 
+                    duration: isMobile ? 0.4 : 0.3,
+                    ease: "easeInOut",
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300
+                  }}
+                  className="relative"
                   dir="rtl"
                 >
-                  <CurrentStepComponent />
+                  {/* Step content with enhanced mobile experience */}
+                  <div className={`
+                    transform transition-all duration-500 ease-out quiz-step-container
+                    ${isMobile ? 'min-h-[60vh]' : 'min-h-[50vh]'}
+                  `}>
+                    <div className="quiz-field-focus">
+                      <CurrentStepComponent />
+                    </div>
+                  </div>
+                  
+                  {/* Step completion celebration indicator */}
+                  {completedSteps.includes(currentStep) && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg"
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        ✓
+                      </motion.div>
+                    </motion.div>
+                  )}
                 </motion.div>
               </AnimatePresence>
 
@@ -426,32 +646,110 @@ export function QuizWizard() {
 
                 {currentStep < steps.length - 1 ? (
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: "0 10px 25px rgba(147, 51, 234, 0.4)"
+                    }}
                     whileTap={{ scale: 0.95 }}
                     type="button"
                     onClick={nextStep}
-                    className="mr-auto flex items-center gap-1 sm:gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-medium rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
+                    className={`
+                      relative overflow-hidden mr-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 
+                      bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 
+                      hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 
+                      text-white font-bold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl 
+                      transition-all duration-300 text-sm sm:text-base
+                      ${isMobile ? 'min-h-[54px] text-lg' : ''}
+                    `}
                   >
-                    التالي
-                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                    {/* Shimmer effect for mobile */}
+                    {isMobile && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        animate={{
+                          x: ["-100%", "100%"]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    )}
+                    
+                    <span>التالي</span>
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ 
+                        duration: 1.5, 
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </motion.div>
                   </motion.button>
                 ) : (
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: "0 15px 35px rgba(34, 197, 94, 0.4)"
+                    }}
                     whileTap={{ scale: 0.95 }}
                     type="submit"
                     disabled={isSubmitting}
-                    className="mr-auto flex items-center gap-1 sm:gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    className={`
+                      relative overflow-hidden mr-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 
+                      bg-gradient-to-r from-green-600 to-emerald-600 
+                      hover:from-green-700 hover:to-emerald-700 
+                      disabled:from-gray-400 disabled:to-gray-500 
+                      text-white font-bold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl 
+                      transition-all duration-300 text-sm sm:text-base
+                      disabled:opacity-50 disabled:cursor-not-allowed
+                      ${isMobile ? 'min-h-[54px] text-lg' : ''}
+                    `}
                   >
+                    {/* Success pulse effect */}
+                    {!isSubmitting && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-green-400/30 to-emerald-400/30 rounded-xl"
+                        animate={{
+                          scale: [1, 1.05, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    )}
+                    
                     {isSubmitting ? (
                       <>
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                        جاري الإرسال...
+                        <motion.div 
+                          className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        />
+                        <span>جاري الإرسال...</span>
                       </>
                     ) : (
                       <>
-                        <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-                        أرسل طلبي الحين
+                        <motion.div
+                          animate={{ 
+                            x: [0, 3, 0],
+                            y: [0, -2, 0]
+                          }}
+                          transition={{ 
+                            duration: 2, 
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </motion.div>
+                        <span>أرسل طلبي الحين</span>
                       </>
                     )}
                   </motion.button>

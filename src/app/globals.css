@@ -55,6 +55,158 @@
 .image-container:hover::before {
   transform: translateX(100%);
 }
+
+/* Quiz Form Enhanced Animations & Mobile Optimizations */
+.highlight-error {
+  animation: highlight-pulse 2s ease-in-out;
+  position: relative;
+}
+
+@keyframes highlight-pulse {
+  0% { 
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    border-color: rgb(239, 68, 68);
+  }
+  25% { 
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.3);
+    border-color: rgb(239, 68, 68);
+  }
+  50% { 
+    box-shadow: 0 0 0 20px rgba(239, 68, 68, 0.1);
+    border-color: rgb(239, 68, 68);
+  }
+  75% { 
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.3);
+    border-color: rgb(239, 68, 68);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    border-color: rgb(239, 68, 68);
+  }
+}
+
+/* Enhanced mobile quiz experience */
+@media (max-width: 768px) {
+  .quiz-mobile-enhanced {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  .quiz-mobile-enhanced * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Mobile button enhancements */
+  .mobile-button-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .mobile-button-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+  }
+  
+  .mobile-button-glow:active::before {
+    left: 100%;
+  }
+}
+
+/* Celebration effects */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes success-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes mobile-celebration {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+/* Enhanced form field focus states */
+.quiz-field-focus {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quiz-field-focus:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 25px -5px rgba(139, 92, 246, 0.3),
+    0 10px 10px -5px rgba(139, 92, 246, 0.04);
+}
+
+/* Progress indicators */
+.progress-celebration {
+  animation: progress-pulse 0.6s ease-out;
+}
+
+@keyframes progress-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Step completion effects */
+.step-complete-checkmark {
+  animation: checkmark-appear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkmark-appear {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(-45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Enhanced mobile smooth scrolling */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .quiz-scroll-enhanced {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 20px;
+  }
+  
+  .quiz-step-container {
+    scroll-snap-align: start;
+  }
+}
 /* Animations */
 @keyframes blob {
   0%, 100% {
