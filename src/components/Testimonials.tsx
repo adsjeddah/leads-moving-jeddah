@@ -243,28 +243,60 @@ export function Testimonials() {
           viewport={{ once: true }}
           className="flex justify-center items-center mb-8"
         >
-          <div className="flex items-center gap-1">
-            {clientAvatars.slice(0, 12).map((avatar, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-                viewport={{ once: true }}
-                className="relative"
-                style={{ zIndex: 12 - index }}
-              >
-                <div className="relative overflow-hidden rounded-full border-3 border-white/50 bg-white/10 backdrop-blur-sm hover:scale-110 transition-all duration-300 hover:border-white/70">
-                  <Image
-                    src={avatar}
-                    alt={`عميل ${index + 1}`}
-                    width={48}
-                    height={48}
-                    className="rounded-full object-cover"
-                  />
-                </div>
-              </motion.div>
-            ))}
+          <div className="flex items-center gap-2">
+            {clientAvatars.slice(0, 12).map((avatar, index) => {
+              // تحديد ما إذا كانت هذه الصورة مرتبطة بالتقييم الحالي
+              const isActiveTestimonial = testimonials[currentTestimonial]?.avatar === avatar
+              
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                  className="relative cursor-pointer"
+                  onClick={() => {
+                    // البحث عن التقييم المرتبط بهذه الصورة
+                    const testimonialIndex = testimonials.findIndex(t => t.avatar === avatar)
+                    if (testimonialIndex !== -1) {
+                      setAutoPlay(false)
+                      setCurrentTestimonial(testimonialIndex)
+                    }
+                  }}
+                >
+                  <div 
+                    className={`
+                      relative overflow-hidden rounded-full transition-all duration-500 ease-in-out
+                      ${isActiveTestimonial 
+                        ? 'w-16 h-16 border-4 border-amber-400 shadow-lg shadow-amber-400/50 scale-110 animate-pulse' 
+                        : 'w-12 h-12 border-2 border-white/50 hover:border-white/70 hover:scale-105'
+                      }
+                      bg-white/10 backdrop-blur-sm
+                    `}
+                  >
+                    <Image
+                      src={avatar}
+                      alt={`عميل ${index + 1}`}
+                      width={64}
+                      height={64}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                    
+                    {/* مؤشر التقييم النشط */}
+                    {isActiveTestimonial && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -bottom-1 -right-1 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center border-2 border-white"
+                      >
+                        <Star className="w-3 h-3 text-white fill-white" />
+                      </motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              )
+            })}
           </div>
         </motion.div>
 
