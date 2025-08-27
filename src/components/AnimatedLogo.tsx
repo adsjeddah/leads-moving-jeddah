@@ -16,9 +16,9 @@ export function AnimatedLogo() {
       <Image
         src="/images/logo.jpg"
         alt="بروكر - نقل عفش جدة"
-        width={120}
-        height={40}
-        className="h-8 sm:h-10 w-auto object-contain"
+        width={150}
+        height={50}
+        className="h-10 sm:h-12 w-auto object-contain"
         priority
       />
     </motion.div>
