@@ -1,13 +1,34 @@
-import React from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import jeddahDistricts from '@/data/jeddah_districts.json'
-import saudiCities from '@/data/saudi_cities.json'
 import { formatNumberInput } from '@/lib/arabicToEnglish'
 
 export function StepDeliveryDetails() {
   const { register, watch, setValue, formState: { errors } } = useFormContext()
+  
+  // Minimize watches to reduce re-renders
   const serviceType = watch('service_type')
   const toCity = watch('to_city')
+  
+  // Memoized data loading - only load when needed
+  const jeddahDistricts = useMemo(() => {
+    if (serviceType === 'داخل_جدة' || (serviceType === 'من_وإلى_جدة' && toCity === 'جدة')) {
+      return require('@/data/jeddah_districts.json')
+    }
+    return { districts: [] }
+  }, [serviceType, toCity])
+  
+  const saudiCities = useMemo(() => {
+    if (serviceType === 'من_وإلى_جدة') {
+      return require('@/data/saudi_cities.json')
+    }
+    return { cities: [] }
+  }, [serviceType])
+  
+  // Memoized handlers to prevent recreation
+  const handleFloorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatNumberInput(e.target.value)
+    setValue('to_floor', parseInt(formatted) || 0)
+  }, [setValue])
 
   return (
     <div className="space-y-6">
@@ -28,7 +49,7 @@ export function StepDeliveryDetails() {
               {...register('to_city')}
             >
               <option value="">اختر مدينة التسليم</option>
-              {saudiCities.cities.map((city) => (
+              {saudiCities.cities.map((city: string) => (
                 <option key={city} value={city}>
                   {city}
                 </option>
@@ -68,7 +89,7 @@ export function StepDeliveryDetails() {
               {...register('to_district')}
             >
               <option value="">اختر الحي</option>
-              {jeddahDistricts.districts.map((district) => (
+              {jeddahDistricts.districts.map((district: string) => (
                 <option key={district} value={district}>
                   {district}
                 </option>
@@ -92,16 +113,8 @@ export function StepDeliveryDetails() {
             inputMode="numeric"
             placeholder="0"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
-            {...register('to_floor', {
-              setValueAs: (value) => {
-                const formatted = formatNumberInput(value)
-                return formatted === '' ? 0 : parseInt(formatted, 10)
-              },
-              onChange: (e) => {
-                const formatted = formatNumberInput(e.target.value)
-                e.target.value = formatted
-              }
-            })}
+            {...register('to_floor')}
+            onChange={handleFloorChange}
           />
           {errors.to_floor && (
             <p className="text-red-500 text-sm mt-1">{errors.to_floor.message as string}</p>

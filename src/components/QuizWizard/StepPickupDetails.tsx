@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Home, Building, Building2, Warehouse } from 'lucide-react'
-import jeddahDistricts from '@/data/jeddah_districts.json'
-import saudiCities from '@/data/saudi_cities.json'
 import { formatNumberInput } from '@/lib/arabicToEnglish'
 
+// Memoized static data to prevent re-creation
 const placeTypes = [
   { value: 'شقة', label: 'شقة', icon: Building },
   { value: 'فيلا', label: 'فيلا', icon: Home },
@@ -12,11 +11,39 @@ const placeTypes = [
   { value: 'مستودع', label: 'مستودع', icon: Warehouse },
 ]
 
+// Lazy load data only when needed
+const getJeddahDistricts = () => import('@/data/jeddah_districts.json')
+const getSaudiCities = () => import('@/data/saudi_cities.json')
+
 export function StepPickupDetails() {
   const { register, watch, setValue, formState: { errors } } = useFormContext()
+  
+  // Minimize watches to reduce re-renders
   const selectedPlaceType = watch('from_place_type')
   const serviceType = watch('service_type')
   const fromCity = watch('from_city')
+  
+  // Memoized data loading
+  const jeddahDistricts = useMemo(() => {
+    if (serviceType === 'داخل_جدة' || (serviceType === 'من_وإلى_جدة' && fromCity === 'جدة')) {
+      // Only load when actually needed
+      return require('@/data/jeddah_districts.json')
+    }
+    return { districts: [] }
+  }, [serviceType, fromCity])
+  
+  const saudiCities = useMemo(() => {
+    if (serviceType === 'من_وإلى_جدة') {
+      return require('@/data/saudi_cities.json')
+    }
+    return { cities: [] }
+  }, [serviceType])
+  
+  // Memoized handlers to prevent recreation
+  const handleFloorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatNumberInput(e.target.value)
+    setValue('from_floor', parseInt(formatted) || 0)
+  }, [setValue])
 
   return (
     <div className="space-y-6">
@@ -37,7 +64,7 @@ export function StepPickupDetails() {
               {...register('from_city')}
             >
               <option value="">اختر مدينة الاستلام</option>
-              {saudiCities.cities.map((city) => (
+              {saudiCities.cities.map((city: string) => (
                 <option key={city} value={city}>
                   {city}
                 </option>
@@ -77,7 +104,7 @@ export function StepPickupDetails() {
               {...register('from_district')}
             >
               <option value="">اختر الحي</option>
-              {jeddahDistricts.districts.map((district) => (
+              {jeddahDistricts.districts.map((district: string) => (
                 <option key={district} value={district}>
                   {district}
                 </option>

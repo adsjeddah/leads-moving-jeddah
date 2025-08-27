@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { 
   Plus, Minus, Package, Bed, Home, Sofa, Table, ChefHat, 
   Refrigerator, Snowflake, Shirt, Sun, Monitor, BookOpen, Box, Star
 } from 'lucide-react'
 
+// Memoized static data to prevent re-creation
 const itemsList = [
   { id: 'bed', label: 'سرير', icon: Bed, color: 'text-purple-600' },
   { id: 'closet', label: 'دولاب', icon: Home, color: 'text-amber-600' },
@@ -22,11 +23,15 @@ const itemsList = [
 
 export function StepItems() {
   const { watch, setValue, register, formState: { errors } } = useFormContext()
-  const items = watch('items') || []
+  
+  // Minimize watches to reduce re-renders
+  const watchedItems = watch('items')
+  const items = useMemo(() => watchedItems || [], [watchedItems])
   const packagingLevel = watch('packaging_level')
   const hoistNeeded = watch('hoist_needed')
 
-  const updateItemQuantity = (itemId: string, label: string, delta: number) => {
+  // Memoized handlers to prevent recreation
+  const updateItemQuantity = useCallback((itemId: string, label: string, delta: number) => {
     const existingItems = [...items]
     const itemIndex = existingItems.findIndex(item => item.item === label)
     
@@ -42,13 +47,13 @@ export function StepItems() {
     }
     
     setValue('items', existingItems, { shouldValidate: true })
-  }
+  }, [items, setValue])
 
-  const getItemQuantity = (itemId: string) => {
+  const getItemQuantity = useCallback((itemId: string) => {
     const itemLabel = itemsList.find(item => item.id === itemId)?.label
     const item = items.find((i: any) => i.item === itemLabel)
     return item ? item.quantity : 0
-  }
+  }, [items])
 
   return (
     <div className="space-y-8">

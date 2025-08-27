@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { MapPin, Truck, Package, Wrench, Archive, Sparkles, CheckCircle2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
+// Memoized static data to prevent re-creation on every render
 const serviceOptions = [
   { 
     value: 'داخل_جدة', 
@@ -43,21 +44,25 @@ const additionalServices = [
 
 export function StepService() {
   const { register, watch, setValue } = useFormContext()
+  
+  // Minimize watches to reduce re-renders
   const selectedService = watch('service_type')
-  const selectedAddons = watch('additional_services') || []
+  const watchedAddons = watch('additional_services')
+  const selectedAddons = useMemo(() => watchedAddons || [], [watchedAddons])
 
-  const handleServiceSelect = (value: string) => {
+  // Memoized handlers to prevent recreation on every render
+  const handleServiceSelect = useCallback((value: string) => {
     setValue('service_type', value, { shouldValidate: true })
-  }
+  }, [setValue])
 
-  const toggleAddon = (addonId: string) => {
+  const toggleAddon = useCallback((addonId: string) => {
     const current = selectedAddons || []
     if (current.includes(addonId)) {
       setValue('additional_services', current.filter((id: string) => id !== addonId))
     } else {
       setValue('additional_services', [...current, addonId])
     }
-  }
+  }, [selectedAddons, setValue])
 
   return (
     <div className="space-y-8">

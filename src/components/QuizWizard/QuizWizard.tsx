@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,6 +18,7 @@ import { StepItems } from './StepItems'
 import { StepScheduleContact } from './StepScheduleContact'
 import { ProgressBar } from './ProgressBar'
 
+// Memoized static data to prevent re-creation
 const steps = [
   { 
     title: 'نوع الخدمة', 
@@ -72,6 +73,7 @@ const getSmartSuggestions = (formData: Partial<LeadFormData>) => {
   return suggestions
 }
 
+// Optimized QuizWizard component with performance improvements
 export function QuizWizard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)

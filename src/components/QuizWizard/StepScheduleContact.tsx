@@ -1,16 +1,18 @@
-import React from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Calendar, Clock, User, Phone, MessageSquare } from 'lucide-react'
 import { normalizePhoneNumber } from '@/lib/arabicToEnglish'
 
 export function StepScheduleContact() {
   const { register, watch, setValue, formState: { errors } } = useFormContext()
+  
+  // Minimize watches to reduce re-renders
   const timeSlot = watch('time_slot')
   const flexibility = watch('flexibility')
   const whatsappOptin = watch('whatsapp_optin')
 
-  // Generate dates for next 14 days
-  const generateDates = () => {
+  // Memoized date generation to prevent recalculation on every render
+  const availableDates = useMemo(() => {
     const dates = []
     const today = new Date()
     for (let i = 0; i < 14; i++) {
@@ -19,16 +21,17 @@ export function StepScheduleContact() {
       dates.push(date)
     }
     return dates
-  }
+  }, [])
 
-  const formatDate = (date: Date) => {
+  // Memoized formatters to prevent recreation
+  const formatDate = useCallback((date: Date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
     return `${year}-${month}-${day}`
-  }
+  }, [])
 
-  const formatDateDisplay = (date: Date) => {
+  const formatDateDisplay = useCallback((date: Date) => {
     const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
     const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
                     'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
@@ -38,9 +41,9 @@ export function StepScheduleContact() {
     const month = months[date.getMonth()]
     
     return `${dayName} ${day} ${month}`
-  }
+  }, [])
 
-  const dates = generateDates()
+  // Use memoized dates instead of regenerating
 
   return (
     <div className="space-y-6">
@@ -60,7 +63,7 @@ export function StepScheduleContact() {
           {...register('date_pref')}
         >
           <option value="">اختر التاريخ</option>
-          {dates.map((date, index) => (
+          {availableDates.map((date, index) => (
             <option key={index} value={formatDate(date)}>
               {formatDateDisplay(date)}
               {index === 0 && ' (اليوم)'}
