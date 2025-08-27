@@ -5,6 +5,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { Toaster } from '@/components/ui/toaster'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import { DomainFix } from '@/components/DomainFix'
 
 const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
@@ -47,6 +48,7 @@ export default function RootLayout({
   return (
     <html lang="ar-SA" dir="rtl">
       <body className={tajawal.className}>
+        <DomainFix />
         <GoogleAnalytics />
         <Header />
         <main className="min-h-screen">{children}</main>

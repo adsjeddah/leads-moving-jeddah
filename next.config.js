@@ -6,6 +6,11 @@ const nextConfig = {
     locales: ['ar-SA'],
     defaultLocale: 'ar-SA',
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['prokr.sa', 'www.prokr.sa', 'localhost:3000']
+    }
+  },
   images: {
     remotePatterns: [
       {
@@ -21,6 +26,22 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   trailingSlash: false,
+  
+  // Fix prefetching and RSC issues
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'prokr.sa'
+          }
+        ]
+      }
+    ]
+  },
 
   async headers() {
     return [
@@ -42,6 +63,10 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.prokr.sa prokr.sa data: blob:; connect-src 'self' *.prokr.sa prokr.sa https://*.make.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com;",
           },
         ],
       },
