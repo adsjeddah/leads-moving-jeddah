@@ -4,9 +4,9 @@ export function middleware(request: NextRequest) {
   // Get the current URL
   const url = request.nextUrl.clone()
   
-  // Ensure we're using the correct domain
-  if (request.headers.get('host')?.includes('prokr.net')) {
-    url.host = 'prokr.sa'
+  // Ensure we're using the correct domain  
+  if (request.headers.get('host')?.includes('prokr.sa')) {
+    url.host = 'www.prokr.net'
     return NextResponse.redirect(url)
   }
   

@@ -7,8 +7,8 @@ export function DomainFix() {
     // Fix any client-side domain issues
     if (typeof window !== 'undefined') {
       // Check if we're on the wrong domain
-      if (window.location.hostname.includes('prokr.net')) {
-        const newUrl = window.location.href.replace('prokr.net', 'prokr.sa')
+      if (window.location.hostname.includes('prokr.sa')) {
+        const newUrl = window.location.href.replace('prokr.sa', 'www.prokr.net')
         window.location.replace(newUrl)
         return
       }
@@ -20,21 +20,21 @@ export function DomainFix() {
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element
               
-              // Fix any links that point to prokr.net
-              const links = element.querySelectorAll('a[href*="prokr.net"], link[href*="prokr.net"]')
+              // Fix any links that point to prokr.sa
+              const links = element.querySelectorAll('a[href*="prokr.sa"], link[href*="prokr.sa"]')
               links.forEach((link) => {
                 const href = link.getAttribute('href')
-                if (href && href.includes('prokr.net')) {
-                  link.setAttribute('href', href.replace('prokr.net', 'prokr.sa'))
+                if (href && href.includes('prokr.sa')) {
+                  link.setAttribute('href', href.replace('prokr.sa', 'www.prokr.net'))
                 }
               })
               
-              // Fix any script sources that point to prokr.net
-              const scripts = element.querySelectorAll('script[src*="prokr.net"]')
+              // Fix any script sources that point to prokr.sa
+              const scripts = element.querySelectorAll('script[src*="prokr.sa"]')
               scripts.forEach((script) => {
                 const src = script.getAttribute('src')
-                if (src && src.includes('prokr.net')) {
-                  script.setAttribute('src', src.replace('prokr.net', 'prokr.sa'))
+                if (src && src.includes('prokr.sa')) {
+                  script.setAttribute('src', src.replace('prokr.sa', 'www.prokr.net'))
                 }
               })
             }

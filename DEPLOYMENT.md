@@ -105,7 +105,7 @@ vercel --prod
 #### Domain مخصص (اختياري)
 1. إضافة domain في إعدادات Vercel
 2. تحديث DNS records
-3. تحديث metadataBase في layout.tsx
+3. تحديث metadataBase في layout.tsx لاستخدام www.prokr.net
 
 #### HTTPS والأمان
 - الموقع يتضمن headers أمان مُحسنة
@@ -117,7 +117,7 @@ vercel --prod
 - ✅ `next.config.js` - محسن للأداء على Vercel
 - ✅ `vercel.json` - إعدادات خاصة بـ Vercel
 - ✅ `.gitignore` - لحماية الملفات الحساسة
-- ✅ `src/app/layout.tsx` - إضافة metadataBase
+- ✅ `src/app/layout.tsx` - إضافة metadataBase (www.prokr.net)
 - ✅ اختبار البناء - تم بنجاح
 
 ## نصائح مهمة

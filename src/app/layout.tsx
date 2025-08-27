@@ -14,14 +14,14 @@ const tajawal = Tajawal({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://prokr.sa'),
+  metadataBase: new URL('https://www.prokr.net'),
   title: 'prokr - نقل عفش جدة | خدمات نقل آمنة وسريعة',
   description: 'نرتب لك نقل العفش في جدة بسرعة وأمان. احصل على عروض أسعار من أفضل المنفذين خلال دقائق. تغليف احترافي، فك وتركيب، وأسعار منافسة.',
   keywords: 'نقل عفش جدة، نقل اثاث، شركة نقل عفش، فك وتركيب، تغليف اثاث',
   openGraph: {
     title: 'prokr - نقل عفش جدة',
     description: 'احصل على أفضل خدمات نقل العفش في جدة',
-    url: 'https://prokr.sa',
+    url: 'https://www.prokr.net',
     siteName: 'prokr',
     locale: 'ar_SA',
     type: 'website',

@@ -1,56 +1,57 @@
 {
-  "buildCommand": "next build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "functions": {
-    "src/app/api/lead/route.ts": {
-      "maxDuration": 30
-    }
-  },
-  "regions": ["bom1"],
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
+      "source": "/(.*)",
+      "has": [
         {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
+          "type": "host",
+          "value": "prokr.sa"
         }
-      ]
+      ],
+      "destination": "https://www.prokr.net/$1",
+      "permanent": true
     },
     {
       "source": "/(.*)",
-      "headers": [
+      "has": [
         {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
+          "type": "host",
+          "value": "www.prokr.sa"
         }
+      ],
+      "destination": "https://www.prokr.net/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "prokr.net"
+        }
+      ],
+      "destination": "https://www.prokr.net/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "origin-when-cross-origin" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.prokr.net prokr.net www.prokr.net data: blob:; connect-src 'self' *.prokr.net prokr.net www.prokr.net https://*.make.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com;" }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ]

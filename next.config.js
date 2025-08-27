@@ -8,7 +8,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ['prokr.sa', 'www.prokr.sa', 'localhost:3000']
+      allowedOrigins: ['prokr.net', 'www.prokr.net', 'localhost:3000']
     }
   },
   images: {
@@ -36,7 +36,7 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: 'prokr.sa'
+            value: 'www.prokr.net'
           }
         ]
       }
@@ -66,7 +66,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.prokr.sa prokr.sa data: blob:; connect-src 'self' *.prokr.sa prokr.sa https://*.make.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com;",
+            value: "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.prokr.net prokr.net www.prokr.net data: blob:; connect-src 'self' *.prokr.net prokr.net www.prokr.net https://*.make.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com;",
           },
         ],
       },
