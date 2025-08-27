@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer'
 import { Toaster } from '@/components/ui/toaster'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { DomainFix } from '@/components/DomainFix'
+import { SocialProofNotification } from '@/components/SocialProofNotification'
 
 const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
@@ -55,6 +56,7 @@ export default function RootLayout({
         <main className="min-h-screen">{children}</main>
         <Footer />
         <Toaster />
+        <SocialProofNotification />
       </body>
     </html>
   )
