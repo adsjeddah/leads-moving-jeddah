@@ -152,7 +152,8 @@ export function StepScheduleContact() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <User className="inline-block w-4 h-4 ml-1" />
-            الاسم *
+            الاسم <span className="text-red-500 font-bold">*</span>
+            <span className="text-xs text-red-500 block mr-5">(مطلوب)</span>
           </label>
           <input
             type="text"
@@ -168,7 +169,8 @@ export function StepScheduleContact() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <Phone className="inline-block w-4 h-4 ml-1" />
-            رقم الجوال *
+            رقم الجوال <span className="text-red-500 font-bold">*</span>
+            <span className="text-xs text-red-500 block mr-5">(مطلوب)</span>
           </label>
           <input
             type="tel"

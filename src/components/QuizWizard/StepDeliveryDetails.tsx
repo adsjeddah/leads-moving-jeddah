@@ -41,7 +41,8 @@ export function StepDeliveryDetails() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            المدينة *
+            المدينة <span className="text-red-500 font-bold">*</span>
+            <span className="text-xs text-red-500 block">(مطلوب)</span>
           </label>
           {serviceType === 'من_وإلى_جدة' ? (
             <select
@@ -72,8 +73,18 @@ export function StepDeliveryDetails() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {serviceType === 'من_وإلى_جدة' && toCity && toCity !== 'جدة' 
-              ? 'الحي/المنطقة *' 
-              : 'الحي *'
+              ? (
+                <>
+                  الحي/المنطقة <span className="text-red-500 font-bold">*</span>
+                  <span className="text-xs text-red-500 block">(مطلوب)</span>
+                </>
+              ) 
+              : (
+                <>
+                  الحي <span className="text-red-500 font-bold">*</span>
+                  <span className="text-xs text-red-500 block">(مطلوب)</span>
+                </>
+              )
             }
           </label>
           {serviceType === 'من_وإلى_جدة' && toCity && toCity !== 'جدة' ? (

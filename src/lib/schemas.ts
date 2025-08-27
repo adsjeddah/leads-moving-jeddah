@@ -6,17 +6,23 @@ export const leadFormSchema = z.object({
   additional_services: z.array(z.string()).optional(),
   
   // From location
-  from_city: z.string().default('جدة'),
-  from_district: z.string().min(1, 'يرجى اختيار الحي'),
-  from_place_type: z.enum(['شقة', 'فيلا', 'مكتب', 'مستودع']),
-  from_floor: z.number().min(0).max(50),
-  from_elevator: z.enum(['yes', 'no']),
+  from_city: z.string().min(1, 'يرجى اختيار مدينة الاستلام').default('جدة'),
+  from_district: z.string().min(1, 'يرجى اختيار حي الاستلام'),
+  from_place_type: z.enum(['شقة', 'فيلا', 'مكتب', 'مستودع'], {
+    errorMap: () => ({ message: 'يرجى اختيار نوع المكان' })
+  }),
+  from_floor: z.number().min(0, 'يرجى إدخال رقم الطابق').max(50, 'الحد الأقصى 50 طابق'),
+  from_elevator: z.enum(['yes', 'no'], {
+    errorMap: () => ({ message: 'يرجى اختيار وجود المصعد' })
+  }),
   
   // To location
-  to_city: z.string().min(1, 'يرجى اختيار المدينة'),
-  to_district: z.string().min(1, 'يرجى اختيار الحي'),
-  to_floor: z.number().min(0).max(50),
-  to_elevator: z.enum(['yes', 'no']),
+  to_city: z.string().min(1, 'يرجى اختيار مدينة التسليم'),
+  to_district: z.string().min(1, 'يرجى اختيار حي التسليم'),
+  to_floor: z.number().min(0, 'يرجى إدخال رقم الطابق').max(50, 'الحد الأقصى 50 طابق'),
+  to_elevator: z.enum(['yes', 'no'], {
+    errorMap: () => ({ message: 'يرجى اختيار وجود المصعد' })
+  }),
   
   // Items
   items: z.array(z.object({
@@ -32,10 +38,10 @@ export const leadFormSchema = z.object({
   flexibility: z.enum(['flexible', 'strict']),
   
   // Customer
-  customer_name: z.string().min(2, 'يرجى إدخال الاسم'),
+  customer_name: z.string().min(2, 'يرجى إدخال الاسم (مطلوب)').max(50, 'الاسم طويل جداً'),
   customer_phone: z.string().regex(
     /^(\+?9665|05)[0-9]{8}$/,
-    'يرجى إدخال رقم جوال سعودي صحيح'
+    'يرجى إدخال رقم جوال سعودي صحيح (مطلوب)'
   ),
   whatsapp_optin: z.boolean().default(false),
   notes: z.string().optional(),

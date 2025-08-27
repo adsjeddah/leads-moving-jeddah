@@ -181,6 +181,24 @@ export function QuizWizard() {
     const isValid = await methods.trigger(fields as any)
     
     if (isValid) {
+      // Additional validation for required fields before proceeding
+      const requiredFieldsValidation = validateRequiredFieldsForStep(currentStep)
+      
+      if (!requiredFieldsValidation.isValid) {
+        // Show specific error message for missing required fields
+        toast({
+          title: 'خانات مطلوبة غير مكتملة',
+          description: requiredFieldsValidation.message,
+          variant: 'destructive',
+        })
+        
+        // Scroll to first missing required field
+        if (requiredFieldsValidation.firstMissingField) {
+          scrollToErrorField(requiredFieldsValidation.firstMissingField)
+        }
+        return
+      }
+      
       // Trigger celebration effect
       triggerCelebration()
       
@@ -205,10 +223,15 @@ export function QuizWizard() {
         }
       }
     } else {
-      // Scroll to first error field
+      // Scroll to first error field with more specific message
       const errors = methods.formState.errors
       const errorFields = Object.keys(errors)
       if (errorFields.length > 0) {
+        toast({
+          title: 'يرجى إكمال البيانات المطلوبة',
+          description: 'تأكد من ملء جميع الخانات المطلوبة قبل المتابعة',
+          variant: 'destructive',
+        })
         scrollToErrorField(errorFields[0])
       }
     }
@@ -224,6 +247,20 @@ export function QuizWizard() {
   }
 
   const goToStep = (stepIndex: number) => {
+    // Check if user is trying to skip forward
+    if (stepIndex > currentStep) {
+      // Validate current step first
+      const requiredFieldsValidation = validateRequiredFieldsForStep(currentStep)
+      if (!requiredFieldsValidation.isValid) {
+        toast({
+          title: 'أكمل الخطوة الحالية أولاً',
+          description: requiredFieldsValidation.message,
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+    
     if (stepIndex <= Math.max(...completedSteps, 0) + 1) {
       scrollToQuizTop()
       setTimeout(() => {
@@ -233,6 +270,17 @@ export function QuizWizard() {
   }
 
   const onSubmit = async (data: LeadFormData) => {
+    // Final validation for required fields before submission
+    const finalValidation = validateRequiredFieldsForStep(4)
+    if (!finalValidation.isValid) {
+      toast({
+        title: 'خانات مطلوبة غير مكتملة',
+        description: finalValidation.message,
+        variant: 'destructive',
+      })
+      return
+    }
+    
     setIsSubmitting(true)
     
     try {
@@ -306,6 +354,66 @@ export function QuizWizard() {
       default:
         return []
     }
+  }
+
+  // Validate required fields for each step
+  const validateRequiredFieldsForStep = (step: number) => {
+    const currentFormData = methods.getValues()
+    
+    switch (step) {
+      case 1: // Pickup details
+        if (!currentFormData.from_district || currentFormData.from_district.trim() === '') {
+          return {
+            isValid: false,
+            message: 'يرجى اختيار حي الاستلام قبل المتابعة',
+            firstMissingField: 'from_district'
+          }
+        }
+        if (!currentFormData.from_place_type) {
+          return {
+            isValid: false,
+            message: 'يرجى اختيار نوع المكان قبل المتابعة',
+            firstMissingField: 'from_place_type'
+          }
+        }
+        break
+        
+      case 2: // Delivery details
+        if (!currentFormData.to_city || currentFormData.to_city.trim() === '') {
+          return {
+            isValid: false,
+            message: 'يرجى اختيار مدينة التسليم قبل المتابعة',
+            firstMissingField: 'to_city'
+          }
+        }
+        if (!currentFormData.to_district || currentFormData.to_district.trim() === '') {
+          return {
+            isValid: false,
+            message: 'يرجى اختيار حي التسليم قبل المتابعة',
+            firstMissingField: 'to_district'
+          }
+        }
+        break
+        
+      case 4: // Schedule & Contact
+        if (!currentFormData.customer_name || currentFormData.customer_name.trim() === '') {
+          return {
+            isValid: false,
+            message: 'يرجى إدخال الاسم قبل إرسال الطلب',
+            firstMissingField: 'customer_name'
+          }
+        }
+        if (!currentFormData.customer_phone || currentFormData.customer_phone.trim() === '') {
+          return {
+            isValid: false,
+            message: 'يرجى إدخال رقم الجوال قبل إرسال الطلب',
+            firstMissingField: 'customer_phone'
+          }
+        }
+        break
+    }
+    
+    return { isValid: true, message: '', firstMissingField: null }
   }
 
   const CurrentStepComponent = steps[currentStep].component

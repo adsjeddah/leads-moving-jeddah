@@ -365,6 +365,28 @@
   .animate-accordion-up {
     animation: accordion-up 0.2s ease-out;
   }
+  
+  /* Required field validation styles */
+  .highlight-error {
+    animation: highlight-pulse 2s ease-in-out;
+  }
+  
+  @keyframes highlight-pulse {
+    0%, 100% { background-color: transparent; }
+    25%, 75% { background-color: rgba(239, 68, 68, 0.1); }
+    50% { background-color: rgba(239, 68, 68, 0.2); }
+  }
+  
+  /* Required field border enhancement */
+  .required-field:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+  }
+  
+  .required-field.error {
+    border-color: #ef4444 !important;
+    background-color: rgba(239, 68, 68, 0.05);
+  }
 }
 
 /* Custom scrollbar */

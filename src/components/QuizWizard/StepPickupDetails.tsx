@@ -87,8 +87,18 @@ export function StepPickupDetails() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {serviceType === 'من_وإلى_جدة' && fromCity && fromCity !== 'جدة' 
-              ? 'الحي/المنطقة *' 
-              : 'الحي *'
+              ? (
+                <>
+                  الحي/المنطقة <span className="text-red-500 font-bold">*</span>
+                  <span className="text-xs text-red-500 block">(مطلوب)</span>
+                </>
+              ) 
+              : (
+                <>
+                  الحي <span className="text-red-500 font-bold">*</span>
+                  <span className="text-xs text-red-500 block">(مطلوب)</span>
+                </>
+              )
             }
           </label>
           {serviceType === 'من_وإلى_جدة' && fromCity && fromCity !== 'جدة' ? (
@@ -120,7 +130,8 @@ export function StepPickupDetails() {
       {/* Place Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          نوع المكان *
+          نوع المكان <span className="text-red-500 font-bold">*</span>
+          <span className="text-xs text-red-500 block">(مطلوب)</span>
         </label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {placeTypes.map((type) => {
