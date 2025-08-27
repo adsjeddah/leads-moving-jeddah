@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { MapPin, Truck, Package, Wrench, Archive, Shield, Clock, Users, Star, CheckCircle, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -12,7 +13,8 @@ const services = [
     description: 'من حي لحي، نوصلك لأحسن المنفذين',
     features: ['تغطية جميع الأحياء', 'توصيل في نفس اليوم', 'أسعار ثابتة'],
     popular: false,
-    color: 'blue'
+    color: 'blue',
+    image: '/images/furniture_moving_services_jeddah_1.jpeg'
   },
   {
     icon: Truck,
@@ -20,7 +22,8 @@ const services = [
     description: 'للي رايح أو جاي جدة، عندنا أفضل الشركات',
     features: ['تأمين على البضائع', 'تتبع الشحنة', 'خدمة 24/7'],
     popular: true,
-    color: 'purple'
+    color: 'purple',
+    image: '/images/furniture_moving_trucks.jpeg'
   },
   {
     icon: Package,
@@ -28,7 +31,8 @@ const services = [
     description: 'عشان عفشك يوصل سليم 100%',
     features: ['مواد تغليف مستوردة', 'حماية 100%', 'تغليف مخصص'],
     popular: false,
-    color: 'green'
+    color: 'green',
+    image: '/images/furniture_packing_experts.jpeg'
   },
   {
     icon: Wrench,
@@ -36,7 +40,8 @@ const services = [
     description: 'عمال محترفين يفكون ويركبون بدقة',
     features: ['فنيون محترفون', 'أدوات حديثة', 'ضمان التركيب'],
     popular: false,
-    color: 'orange'
+    color: 'orange',
+    image: '/images/furniture_assembly_services.jpeg'
   },
   {
     icon: Archive,
@@ -44,7 +49,8 @@ const services = [
     description: 'لو محتاج تخزن عفشك فترة، عندنا مستودعات آمنة',
     features: ['مستودعات مؤمنة', 'تكييف 24/7', 'مراقبة مستمرة'],
     popular: false,
-    color: 'red'
+    color: 'red',
+    image: '/images/furniture_storage_solutions.jpeg'
   },
   {
     icon: Shield,
@@ -52,7 +58,8 @@ const services = [
     description: 'تأمين كامل على جميع المنقولات ضد التلف والفقدان',
     features: ['تغطية شاملة', 'تعويض فوري', 'بدون رسوم إضافية'],
     popular: false,
-    color: 'indigo'
+    color: 'indigo',
+    image: '/images/furniture_moving_insurance.jpeg'
   }
 ]
 
@@ -176,51 +183,64 @@ export function Services() {
                 )}
                 
                 <div className={`
-                  h-full p-8 rounded-3xl bg-white border-2 transition-all duration-300 cursor-pointer
+                  h-full rounded-3xl bg-white border-2 transition-all duration-300 cursor-pointer overflow-hidden
                   ${service.popular ? 'border-purple-300 shadow-xl' : 'border-gray-100 hover:border-gray-200 hover:shadow-xl'}
                   group-hover:transform group-hover:scale-[1.02]
                 `}>
-                  {/* Icon */}
-                  <div className="mb-6">
-                    <div className={`
-                      w-16 h-16 rounded-2xl ${colors.bg} flex items-center justify-center
-                      group-hover:scale-110 transition-transform duration-300
-                    `}>
-                      <Icon className={`w-8 h-8 ${colors.text}`} />
+                  {/* Service Image */}
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    
+                    {/* Icon overlay */}
+                    <div className="absolute bottom-4 right-4">
+                      <div className={`
+                        w-12 h-12 rounded-xl ${colors.bg} backdrop-blur-sm border border-white/20 flex items-center justify-center
+                        group-hover:scale-110 transition-transform duration-300
+                      `}>
+                        <Icon className={`w-6 h-6 ${colors.text}`} />
+                      </div>
                     </div>
                   </div>
-
+                  
                   {/* Content */}
-                  <h3 className="text-xl font-bold mb-3 text-gray-900">{service.title}</h3>
-                  <p className="text-gray-600 mb-6">{service.description}</p>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-3 text-gray-900">{service.title}</h3>
+                    <p className="text-gray-600 mb-6">{service.description}</p>
 
-                  {/* Features */}
-                  <ul className="space-y-3 mb-6">
-                    {service.features.map((feature, fIndex) => (
-                      <li key={fIndex} className="flex items-center gap-2">
-                        <CheckCircle className={`w-5 h-5 ${colors.text} flex-shrink-0`} />
-                        <span className="text-sm text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                    {/* Features */}
+                    <ul className="space-y-3 mb-6">
+                      {service.features.map((feature, fIndex) => (
+                        <li key={fIndex} className="flex items-center gap-2">
+                          <CheckCircle className={`w-5 h-5 ${colors.text} flex-shrink-0`} />
+                          <span className="text-sm text-gray-700">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
 
-                  {/* CTA Button */}
-                  <button
-                    onClick={() => {
-                      router.push('/order')
-                    }}
-                    className={`
-                      w-full py-3 px-6 rounded-xl font-medium transition-all duration-300
-                      ${service.popular
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
-                        : `${colors.bg} ${colors.text} hover:bg-opacity-80`
-                      }
-                      group-hover:shadow-lg flex items-center justify-center gap-2
-                    `}
-                  >
-                    <span>اطلب الآن</span>
-                    <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                  </button>
+                    {/* CTA Button */}
+                    <button
+                      onClick={() => {
+                        router.push('/order')
+                      }}
+                      className={`
+                        w-full py-3 px-6 rounded-xl font-medium transition-all duration-300
+                        ${service.popular
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+                          : `${colors.bg} ${colors.text} hover:bg-opacity-80`
+                        }
+                        group-hover:shadow-lg flex items-center justify-center gap-2
+                      `}
+                    >
+                      <span>اطلب الآن</span>
+                      <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             )

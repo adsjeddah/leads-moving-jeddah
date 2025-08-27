@@ -15,7 +15,12 @@ export function Hero() {
   const heroImages = [
     '/images/furniture_moving_services_jeddah_1.jpeg',
     '/images/best_moving_services_jeddah.jpeg',
-    '/images/furniture_moving_trucks.jpeg'
+    '/images/furniture_moving_trucks.jpeg',
+    '/images/experienced_furniture_movers.jpeg',
+    '/images/villa_moving_services.jpeg',
+    '/images/furniture_moving_staff.jpeg',
+    '/images/secure_furniture_transportation.jpeg',
+    '/images/furniture_moving_equipment.jpeg'
   ]
 
   useEffect(() => {

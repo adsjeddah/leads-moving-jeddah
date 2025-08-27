@@ -2,6 +2,59 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Image optimization and loading animations */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Improved image loading transitions */
+.image-loading {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Image hover effects */
+.image-zoom {
+  transition: transform 0.3s ease-in-out;
+}
+
+.image-zoom:hover {
+  transform: scale(1.05);
+}
+
+/* Optimized image containers */
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+  z-index: 1;
+}
+
+.image-container:hover::before {
+  transform: translateX(100%);
+}
 /* Animations */
 @keyframes blob {
   0%, 100% {
