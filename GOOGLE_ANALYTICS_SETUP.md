@@ -50,10 +50,10 @@
 
 ```bash
 # Google Analytics & Ads Configuration  
-NEXT_PUBLIC_GA4_ID=G-XXXXXXXXXX                    # من Google Analytics
+NEXT_PUBLIC_GA4_ID=G-61258CKDB3                    # ✅ تم الإعداد - بروكر جدة
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX                     # من Google Tag Manager (اختياري)
-NEXT_PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX             # من Google Ads
-NEXT_PUBLIC_GOOGLE_CONVERSION_ID=AW-XXXXXXXXX/XXXXXXXXX  # من Google Ads Conversion
+NEXT_PUBLIC_GOOGLE_ADS_ID=AW-990599653             # ✅ تم الإعداد
+NEXT_PUBLIC_GOOGLE_CONVERSION_ID=AW-990599653/XXXXXXXXX  # من Google Ads Conversion
 NEXT_PUBLIC_WHATSAPP_NUMBER=966543654700
 NEXT_PUBLIC_PHONE_NUMBER=966543654700
 
