@@ -8,6 +8,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { DomainFix } from '@/components/DomainFix'
 import { SocialProofNotification } from '@/components/SocialProofNotification'
 import { OnlineProvidersIndicator } from '@/components/OnlineProvidersIndicator'
+import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 
 const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
@@ -59,6 +60,7 @@ export default function RootLayout({
         <Toaster />
         <SocialProofNotification />
         <OnlineProvidersIndicator />
+        <FloatingWhatsApp />
       </body>
     </html>
   )
