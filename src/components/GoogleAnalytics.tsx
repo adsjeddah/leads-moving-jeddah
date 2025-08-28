@@ -75,7 +75,7 @@ export default function GoogleAnalytics() {
                   send_page_view: true
                 });
                 
-                // Enable Google Ads remarketing
+                // Enable Google Ads remarketing - Ensure AW-990599653 is always loaded
                 gtag('config', 'AW-990599653');
                 
                 console.log('Google Analytics loaded with ID: ${GA_ID}');
@@ -89,12 +89,17 @@ export default function GoogleAnalytics() {
       {GOOGLE_ADS_ID && (
         <>
           <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+          />
+          <Script
             id="google-ads-enhanced"
             strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
                 
                 gtag('config', '${GOOGLE_ADS_ID}', {
                   allow_enhanced_conversions: true
@@ -107,8 +112,32 @@ export default function GoogleAnalytics() {
         </>
       )}
 
+      {/* Fallback Google Ads tag - Always ensure AW-990599653 loads */}
+      {!GA_ID && !GTM_ID && !GOOGLE_ADS_ID && (
+        <>
+          <Script
+            strategy="afterInteractive"
+            src="https://www.googletagmanager.com/gtag/js?id=AW-990599653"
+          />
+          <Script
+            id="gtag-fallback-ads"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                
+                gtag('config', 'AW-990599653');
+                console.log('Google Ads fallback initialized with AW-990599653');
+              `,
+            }}
+          />
+        </>
+      )}
+
       {/* Fallback Global gtag function if none of the above load */}
-      {!GTM_ID && !GA_ID && (
+      {!GTM_ID && !GA_ID && GOOGLE_ADS_ID && (
         <Script
           id="gtag-fallback"
           strategy="afterInteractive"
