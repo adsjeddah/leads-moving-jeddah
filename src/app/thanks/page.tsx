@@ -16,6 +16,64 @@ function ThanksContent() {
     if (name) {
       setCustomerName(decodeURIComponent(name))
     }
+
+    // Send conversion event to Google Analytics and Google Ads
+    const sendConversionEvent = () => {
+      // Google Analytics conversion event
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-990599653/abcd1234efgh', // Replace with your actual conversion ID
+          'transaction_id': '',
+          'event_category': 'lead',
+          'event_label': 'furniture_moving_lead',
+          'value': 1,
+          'currency': 'SAR'
+        })
+
+        // Send page view event
+        window.gtag('event', 'page_view', {
+          'page_title': 'Thank You - Lead Submitted',
+          'page_location': window.location.href,
+          'event_category': 'engagement'
+        })
+
+        // Send custom lead_submit event
+        window.gtag('event', 'lead_submit', {
+          'event_category': 'lead_generation',
+          'event_label': 'thanks_page_view',
+          'value': 1,
+          'customer_name': name || 'anonymous'
+        })
+
+        console.log('Conversion events sent to Google Analytics')
+      }
+
+      // Send conversion event via dataLayer (for GTM)
+      if (typeof window !== 'undefined' && window.dataLayer) {
+        window.dataLayer.push({
+          'event': 'conversion',
+          'event_category': 'lead_generation',
+          'event_action': 'form_submit',
+          'event_label': 'furniture_moving_request',
+          'value': 1,
+          'currency': 'SAR',
+          'customer_name': name || 'anonymous'
+        })
+
+        window.dataLayer.push({
+          'event': 'page_view',
+          'page_title': 'Thank You Page',
+          'page_location': window.location.href
+        })
+
+        console.log('Conversion events sent to dataLayer (GTM)')
+      }
+    }
+
+    // Wait a bit for analytics to load
+    const timer = setTimeout(sendConversionEvent, 1000)
+    
+    return () => clearTimeout(timer)
   }, [searchParams])
 
   const handleWhatsAppClick = () => {
